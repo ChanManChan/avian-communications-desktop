@@ -1,0 +1,14 @@
+extends layouts/auth-layout.pug
+
+block content
+  .loginContainer
+    h1 Register
+    form(method="post") 
+      input(type="text", name="firstName", placeholder="First name", required="")
+      input(type="text", name="lastName", placeholder="Last name", required="")
+      input(type="text", name="username", placeholder="Username", required="")
+      input(type="email", name="email", placeholder="Email", required="")
+      input(type="password", name="password", placeholder="Password", required="")
+      input(type="password", name="passwordConf", placeholder="Confirm password", required="")
+      input(type="submit", value="Register")
+    a(href="/login") Already have an account? Login here.
