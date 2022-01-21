@@ -1,5 +1,5 @@
 body {
-  background-color: #0099ff;
+  background-color: #c62828;
 }
 
 .wrapper {
@@ -36,7 +36,7 @@ input[type="password"] {
 }
 
 input[type="submit"] {
-  background-color: #0099ff;
+  background-color: #c62828;
   color: #fff;
   border: none;
   border-radius: 2px;
