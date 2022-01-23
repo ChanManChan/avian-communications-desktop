@@ -7,7 +7,7 @@ class Database {
   }
 
   connect() {
-    mongoose.connect("mongodb://Nandu:police@localhost:27017/Avian_Desktop")
+    mongoose.connect(process.env.DB_URI)
     .then(() => console.log("database connection successful"))
     .catch(err => console.log("database connection error", err))
   }
