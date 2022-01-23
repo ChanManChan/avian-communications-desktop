@@ -10,7 +10,9 @@
   "author": "Nanda Gopal",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "mongodb": "^4.3.1",
     "mongoose": "^6.1.7",
     "pug": "^3.0.2"
