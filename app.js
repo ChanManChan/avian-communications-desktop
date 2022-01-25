@@ -27,10 +27,12 @@ app.use(session({
  }))
 
 // Routes
-const loginRoute = require('./routes/loginRoutes')
-const registerRoute = require('./routes/registerRoutes')
+const loginRoute = require('./routes/login')
+const registerRoute = require('./routes/register')
+const logoutRoute = require('./routes/logout')
 app.use("/login", loginRoute)
 app.use("/register", registerRoute)
+app.use("/logout", logoutRoute)
 
 app.get("/", middleware.requireLogin, (req, res, next) => {
   const payload = {

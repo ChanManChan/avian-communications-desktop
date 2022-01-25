@@ -1,10 +1,31 @@
 :root {
   --primary: #d32f2f;
+  --primaryLight: #ff5f52;
+  --primaryDark: #8e0000;
+  --light: #f2f2f2;
+  --lightGrey: rgb(230, 236, 240);
+  --dark: #424242;
+  --spacing: 15px;
+}
+
+* {
+  outline-color: var(--primaryDark);
+}
+
+body {
+  overflow-x: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
 a,
 a:hover {
   color: inherit;
+}
+
+h1 {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
 }
 
 nav {
@@ -24,10 +45,16 @@ nav a {
   width: 55px;
   height: 55px;
   text-decoration: none;
+  border-radius: 50%;
   color: var(--primary);
+  margin-bottom: var(--spacing);
+  background-color: transparent;
+  transition: color 0.2s ease-out, background-color 0.2s ease-out;
 }
 
-nav a:hover {
+nav a:hover:not(nav a:first-child) {
+  background-color: var(--primaryLight);
+  color: var(--light);
 }
 
 nav a img#logo {
@@ -36,5 +63,67 @@ nav a img#logo {
 }
 
 .mainSectionContainer {
-  background-color: blue;
+  padding: 0;
+  border-left: 1px solid var(--lightGrey);
+  border-right: 1px solid var(--lightGrey);
+  display: flex;
+  flex-direction: column;
+}
+
+.titleContainer {
+  padding: var(--spacing);
+  border-bottom: 1px solid var(--lightGrey);
+}
+
+.postFormContainer {
+  display: flex;
+  padding: var(--spacing);
+  border-bottom: 10px solid var(--lightGrey);
+}
+
+.userImageContainer {
+  width: 50px;
+  height: 50px;
+}
+
+.userImageContainer img {
+  width: 100%;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.textareaContainer {
+  flex: 1;
+  padding-left: var(--spacing);
+}
+
+.textareaContainer textarea {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-size: 19px;
+}
+
+.textareaContainer textarea::placeholder {
+  color: var(--dark);
+}
+
+#submitPostButton {
+  background-color: var(--primary);
+  color: var(--light);
+  border: none;
+  border-radius: 4px;
+  padding: 7px var(--spacing);
+  cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+#submitPostButton:hover {
+  background-color: var(--primaryDark);
+  color: white;
+}
+
+#submitPostButton:disabled {
+  background-color: var(--primaryLight);
+  cursor: unset;
 }
