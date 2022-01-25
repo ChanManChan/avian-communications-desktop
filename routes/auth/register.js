@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const User = require('../schemas/User')
+const User = require('../../schemas/User')
 
 router.get("/", (req, res, next) => {
   res.status(200).render("register")
