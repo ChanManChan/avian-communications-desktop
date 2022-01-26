@@ -4,6 +4,8 @@
   --primaryDark: #8e0000;
   --light: #f2f2f2;
   --lightGrey: rgb(230, 236, 240);
+  --greyText: rgb(101, 119, 134);
+  --greyButtonText: rgba(0, 0, 0, 0.34);
   --dark: #424242;
   --spacing: 15px;
 }
@@ -20,6 +22,13 @@ body {
 a,
 a:hover {
   color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  color: var(--greyButtonText);
 }
 
 h1 {
@@ -105,7 +114,7 @@ nav a img#logo {
 }
 
 .textareaContainer textarea::placeholder {
-  color: var(--dark);
+  color: var(--greyText);
 }
 
 #submitPostButton {
@@ -126,4 +135,66 @@ nav a img#logo {
 #submitPostButton:disabled {
   background-color: var(--primaryLight);
   cursor: unset;
+}
+
+.post {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing);
+  cursor: pointer;
+  border-bottom: 1px solid var(--lightGrey);
+  flex-shrink: 0;
+}
+
+.mainContentContainer {
+  display: flex;
+  flex: 1;
+}
+
+.postContentContainer {
+  padding-left: var(--spacing);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.username, .date {
+  color: var(--greyText);
+}
+
+.displayName {
+  font-weight: 700;
+}
+
+.displayName:hover {
+  text-decoration: underline;
+}
+
+.header a,
+.header span {
+  padding-right: 5px;
+}
+
+.postFooter {
+  display: flex;
+  align-items: center;
+}
+
+.postFooter .postButtonContainer {
+  flex: 1;
+}
+
+.postFooter .postButtonContainer button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.postButtonContainer button:hover {
+  background-color: var(--primaryLight);
+  color: var(--light);
+  border-radius: 50%;
 }
