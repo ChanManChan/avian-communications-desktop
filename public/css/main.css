@@ -195,6 +195,15 @@ nav a img#logo {
 
 .postButtonContainer button:hover {
   background-color: var(--primaryLight);
-  color: var(--light);
+  color: var(--light) !important;
   border-radius: 50%;
+}
+
+.postFooter .postButtonContainer button i,
+.postFooter .postButtonContainer button span {
+  pointer-events: none;
+}
+
+.postButtonContainer.red button.active {
+  color: var(--primaryDark);
 }

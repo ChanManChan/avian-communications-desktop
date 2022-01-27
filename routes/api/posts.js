@@ -34,7 +34,8 @@ router.put("/:id/like", async (req, res, next) => {
   const option = isLiked ? "$pull" : "$addToSet"
 
   req.session.user = await User.findByIdAndUpdate(userId, { [option]: { likes: postId } }, { new: true }).catch(e => res.sendStatus(400))
-  res.status(200).send("ford")
+  const post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true }).catch(e => res.sendStatus(400))
+  res.status(200).send(post)
 })
 
 module.exports = router
