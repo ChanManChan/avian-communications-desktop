@@ -15,7 +15,16 @@ const PostSchema = new Schema({
     { type: Schema.Types.ObjectId, 
       ref: 'User' 
     }
-  ]
+  ],
+  repostUsers: [
+    { type: Schema.Types.ObjectId, 
+      ref: 'User' 
+    }
+  ],
+  repostData: {
+    type: Schema.Types.ObjectId, 
+    ref: 'Post' 
+  }
 }, { timestamps: true })
 
 const Post = mongoose.model('Post', PostSchema)

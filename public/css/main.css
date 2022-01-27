@@ -2,6 +2,7 @@
   --primary: #d32f2f;
   --primaryLight: #ff5f52;
   --primaryDark: #8e0000;
+  --green: rgb(23, 191, 99);
   --light: #f2f2f2;
   --lightGrey: rgb(230, 236, 240);
   --greyText: rgb(101, 119, 134);
@@ -191,12 +192,13 @@ nav a img#logo {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 
 .postButtonContainer button:hover {
   background-color: var(--primaryLight);
   color: var(--light) !important;
-  border-radius: 50%;
 }
 
 .postFooter .postButtonContainer button i,
@@ -205,5 +207,16 @@ nav a img#logo {
 }
 
 .postButtonContainer.red button.active {
-  color: var(--primaryDark);
+  color: var(--primaryLight);
+}
+
+.postButtonContainer.green button.active {
+  color: var(--green);
+}
+
+.postActionContainer {
+  padding-left: 65px;
+  color: var(--greyText);
+  font-size: 13px;
+  margin-bottom: 3px;
 }
