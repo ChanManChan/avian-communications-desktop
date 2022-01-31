@@ -24,6 +24,10 @@ const PostSchema = new Schema({
   repostData: {
     type: Schema.Types.ObjectId, 
     ref: 'Post' 
+  },
+  replyTo: {
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
   }
 }, { timestamps: true })
 

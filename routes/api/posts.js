@@ -4,15 +4,15 @@ const User = require('../../schemas/User')
 const Post = require('../../schemas/Post')
 
 router.get("/", async (req, res, next) => {
- let posts = await Post
-          .find()
-          .populate("postedBy")
-          .populate("repostData")
-          .sort({ "createdAt": -1 })
-          .catch(e => res.sendStatus(400))
- posts = await User.populate(posts, { path: "repostData.postedBy" })
+ const posts = await getPosts({})
  res.status(200).send(posts)
 })
+
+router.get("/:id", async (req, res, next) => {
+  const postId = req.params.id
+  const post = await getPosts({ _id: postId })
+  res.status(200).send(post)
+ })
 
 router.post("/", async (req, res, next) => {
   if (!req.body.content) {
@@ -22,6 +22,10 @@ router.post("/", async (req, res, next) => {
   const postData = {
     content: req.body.content,
     postedBy: req.session.user
+  }
+
+  if (req.body.replyTo) {
+    postData.replyTo = req.body.replyTo
   }
 
   let createdPost = await Post.create(postData).catch(e => res.sendStatus(400))
@@ -55,5 +59,17 @@ router.post("/:id/repost", async (req, res, next) => {
   const post = await Post.findByIdAndUpdate(postId, { [option]: { repostUsers: userId } }, { new: true }).catch(e => res.sendStatus(400))
   res.status(200).send(post)
 })
+
+async function getPosts(filter) {
+  let results = await Post
+          .find(filter)
+          .populate("postedBy")
+          .populate("repostData")
+          .populate("replyTo")
+          .sort({ "createdAt": -1 })
+          .catch(e => console.error(e))
+  results = await User.populate(results, { path: "replyTo.postedBy" })
+  return await User.populate(results, { path: "repostData.postedBy" })
+}
 
 module.exports = router

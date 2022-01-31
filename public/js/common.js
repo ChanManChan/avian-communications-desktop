@@ -1,8 +1,8 @@
 $("#postTextarea, #replyTextarea").keyup(e => {
-  const textbox = e.target
-  const value = textbox.value.trim()
-  const submitButton = $("#submitPostButton")
-  const replyButton = $("#submitReplyButton")
+  const textbox = $(e.target)
+  const value = textbox.val().trim()
+  const isModal = textbox.parents(".modal").length == 1
+  const submitButton = isModal ? $("#submitReplyButton") : $("#submitPostButton")
 
   if (submitButton.length != 0) {
     if (value == "") {
@@ -13,20 +13,40 @@ $("#postTextarea, #replyTextarea").keyup(e => {
   }
 })
 
-$("#submitPostButton").click(e => {
-  const button = e.target
-  const textbox = $("#postTextarea")
+$("#submitPostButton, #submitReplyButton").click(e => {
+  const button = $(e.target)
+  const isModal = button.parents(".modal").length == 1
+  const textbox = isModal ? $("#replyTextarea") : $("#postTextarea")
   const data = {
     content: textbox.val().trim()
+  }
+
+  if (isModal) {
+    const postId = button.data().id
+    data.replyTo = postId
   }
 
   $.post("/api/posts", data, postData => {
     const html = createPostHtml(postData)
     $(".postsContainer").prepend(html)
     textbox.val("")
-    button.disabled = true
+    button.prop("disabled", true)
+    if (postData.replyTo) {
+      $("#replyModal").modal('hide')
+    }
   })
 })
+
+$("#replyModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+  $("#submitReplyButton").data("id", postId)
+  $.get("/api/posts/" + postId, result => {
+    outputPosts(result, $("#originalPostContainer"))
+  })
+})
+
+$("#replyModal").on("hidden.bs.modal", () => $("#originalPostContainer").html(""))
 
 $(document).on("click", ".likeButton", e => {
   const button = $(e.target)
@@ -77,6 +97,7 @@ function getPostIdFromElement(element) {
 function createPostHtml(postData) {
   const postedBy = postData.postedBy
   const isRepost = postData.repostData !== undefined
+  const isReply = postData.replyTo !== undefined
   const repostedBy = isRepost ? postData.postedBy.username : null
   postData = isRepost ? postData.repostData : postData
 
@@ -89,6 +110,7 @@ function createPostHtml(postData) {
   const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : ""
   const repostButtonActiveClass = postData.repostUsers.includes(userLoggedIn._id) ? "active" : ""
   let repostText = ''
+  let replyFlag = ''
 
   if (isRepost) {
     repostText = `
@@ -96,6 +118,21 @@ function createPostHtml(postData) {
           <i class='fas fa-retweet'></i>
           Reposted by <a href='/profile/${repostedBy}'>@${repostedBy}</a>
         </span>`
+  }
+
+  if (isReply) {
+    if (!postData.replyTo._id) {
+      return console.error("replyTo is not populated")
+    }
+
+    if (!postData.replyTo.postedBy._id) {
+      return console.error("postedBy is not populated")
+    }
+
+    const replyToUsername = postData.replyTo.postedBy.username
+    replyFlag = `<div class='replyFlag'>
+                  Replying to <a href='/profile/${replyToUsername}}'>@${replyToUsername}</a>
+                 </div>`
   }
 
   return `<div class='post' data-id='${postData._id}'>
@@ -112,6 +149,7 @@ function createPostHtml(postData) {
                   <span class='username'>@${postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
                 </div>
+                ${replyFlag}
                 <div class='postBody'>
                   <span>${postData.content}</span>
                 </div>
@@ -163,4 +201,18 @@ function timeDifference(current, previous) {
   } else {
       return Math.round(elapsed/msPerYear) + ' years ago'
   }
+}
+
+function outputPosts(results, container) {
+  container.html("")
+
+  if (results.length == 0) {
+    container.append("<span class='noResults'>Nothing to show</span>") 
+    return
+  }
+
+  results.forEach(result => {
+    const html = createPostHtml(result)
+    container.append(html)
+  })
 }
