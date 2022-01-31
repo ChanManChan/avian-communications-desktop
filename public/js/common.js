@@ -1,7 +1,8 @@
-$("#postTextarea").keyup(e => {
+$("#postTextarea, #replyTextarea").keyup(e => {
   const textbox = e.target
   const value = textbox.value.trim()
   const submitButton = $("#submitPostButton")
+  const replyButton = $("#submitReplyButton")
 
   if (submitButton.length != 0) {
     if (value == "") {

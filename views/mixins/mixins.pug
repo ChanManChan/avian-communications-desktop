@@ -16,7 +16,11 @@ mixin createReplyModal(userLoggedIn)
           button.close(type='button' data-dismiss='modal' aria-label='Close')
             span(aria-hidden='true') &times;
         .modal-body
-          | ...
+          .postFormContainer
+            .userImageContainer
+              img(src=userLoggedIn.profilePic, alt="Profile picture")
+            .textareaContainer
+              textarea#replyTextarea(placeholder="What's happening?")
         .modal-footer
           button.btn.btn-secondary(type='button' data-dismiss='modal') Close
-          button#submitReplyButton.btn.btn-primary(type='button', disabled="") Reply
+          button#submitReplyButton(type='button', disabled="") Reply

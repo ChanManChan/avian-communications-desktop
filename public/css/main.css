@@ -91,6 +91,12 @@ nav a img#logo {
   border-bottom: 10px solid var(--lightGrey);
 }
 
+.modal .postFormContainer {
+  border: none;
+  padding: 0;
+  padding-top: var(--spacing);
+}
+
 .userImageContainer {
   width: 50px;
   height: 50px;
@@ -118,7 +124,8 @@ nav a img#logo {
   color: var(--greyText);
 }
 
-#submitPostButton {
+#submitPostButton,
+#submitReplyButton {
   background-color: var(--primary);
   color: var(--light);
   border: none;
@@ -128,12 +135,14 @@ nav a img#logo {
   transition: background-color 0.2s ease-out, color 0.2s ease-out;
 }
 
-#submitPostButton:hover {
+#submitPostButton:hover,
+#submitReplyButton:hover {
   background-color: var(--primaryDark);
   color: white;
 }
 
-#submitPostButton:disabled {
+#submitPostButton:disabled,
+#submitReplyButton:disabled {
   background-color: var(--primaryLight);
   cursor: unset;
 }
