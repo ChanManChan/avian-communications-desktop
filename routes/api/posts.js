@@ -10,8 +10,25 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   const postId = req.params.id
-  const post = await getPosts({ _id: postId })
-  res.status(200).send(post)
+  let postData = await getPosts({ _id: postId })
+  postData = postData[0]
+
+  const result = {
+    postData
+  }
+
+  if (postData.replyTo !== undefined) {
+    result.replyTo = postData.replyTo
+  }
+
+  result.replies = await getPosts({ replyTo: postId })
+
+  res.status(200).send(result)
+ })
+
+ router.delete("/:id", async (req, res, next) => {
+  const post = await Post.findByIdAndDelete(req.params.id).catch(() => res.sendStatus(500))
+  res.status(202).send(post)
  })
 
 router.post("/", async (req, res, next) => {

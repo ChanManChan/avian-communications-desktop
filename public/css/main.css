@@ -26,6 +26,10 @@ a:hover {
   text-decoration: none;
 }
 
+i {
+  pointer-events: none;
+}
+
 button {
   background-color: transparent;
   border: none;
@@ -129,7 +133,8 @@ nav a img#logo {
 }
 
 #submitPostButton,
-#submitReplyButton {
+#submitReplyButton,
+#deletePostButton {
   background-color: var(--primary);
   color: var(--light);
   border: none;
@@ -140,13 +145,15 @@ nav a img#logo {
 }
 
 #submitPostButton:hover,
-#submitReplyButton:hover {
+#submitReplyButton:hover,
+#deletePostButton:hover {
   background-color: var(--primaryDark);
   color: white;
 }
 
 #submitPostButton:disabled,
-#submitReplyButton:disabled {
+#submitReplyButton:disabled,
+#deletePostButton:disabled {
   background-color: var(--primaryLight);
   cursor: unset;
 }
@@ -241,4 +248,34 @@ nav a img#logo {
 
 .replyFlag a {
   color: var(--primary);
+}
+
+.post.largeFont .postBody {
+  font-size: 23px;
+}
+
+.post.largeFont .postFooter {
+  font-size: 18px;
+}
+
+.postContentContainer .header {
+  display: flex;
+}
+
+.postContentContainer .header .date {
+  flex: 1;
+}
+
+.postContentContainer .deletePostIcon {
+  cursor: pointer;
+  pointer-events: all;
+  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  background-color: transparent;
+  transition: background-color 0.2s ease-out;
+}
+
+.postContentContainer .deletePostIcon:hover {
+  background-color: var(--lightGrey);
 }

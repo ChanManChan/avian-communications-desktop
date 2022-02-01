@@ -42,11 +42,29 @@ $("#replyModal").on("show.bs.modal", event => {
   const postId = getPostIdFromElement(button)
   $("#submitReplyButton").data("id", postId)
   $.get("/api/posts/" + postId, result => {
-    outputPosts(result, $("#originalPostContainer"))
+    outputPosts([result.postData], $("#originalPostContainer"))
   })
 })
 
 $("#replyModal").on("hidden.bs.modal", () => $("#originalPostContainer").html(""))
+
+$("#deletePostModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+  $("#deletePostButton").data("id", postId)
+})
+
+$("#deletePostButton").click(event => {
+  const postId = $(event.target).data("id")
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "DELETE",
+    success: postData => {
+      $(`div[data-id=${postData._id}]`).remove()
+      $("#deletePostModal").modal('hide')
+    }
+  })
+})
 
 $(document).on("click", ".likeButton", e => {
   const button = $(e.target)
@@ -86,6 +104,14 @@ $(document).on("click", ".repostButton", e => {
   }
 })
 
+$(document).on("click", ".post", e => {
+  const element = $(e.target)
+  const postId = getPostIdFromElement(element)
+  if (postId !== undefined && !element.is("button")) {
+    window.location.href = '/posts/' + postId
+  }
+})
+
 function getPostIdFromElement(element) {
   const isRoot = element.hasClass("post")
   const rootElement = isRoot ? element : element.closest(".post")
@@ -94,10 +120,9 @@ function getPostIdFromElement(element) {
   return postId
 }
 
-function createPostHtml(postData) {
+function createPostHtml(postData, largeFont = false) {
   const postedBy = postData.postedBy
   const isRepost = postData.repostData !== undefined
-  const isReply = postData.replyTo !== undefined
   const repostedBy = isRepost ? postData.postedBy.username : null
   postData = isRepost ? postData.repostData : postData
 
@@ -109,8 +134,10 @@ function createPostHtml(postData) {
   const timestamp = timeDifference(new Date(), new Date(postData.createdAt))
   const likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : ""
   const repostButtonActiveClass = postData.repostUsers.includes(userLoggedIn._id) ? "active" : ""
+  const largeFontClass = largeFont ? "largeFont" : ""
   let repostText = ''
   let replyFlag = ''
+  let closeButton = ''
 
   if (isRepost) {
     repostText = `
@@ -120,10 +147,7 @@ function createPostHtml(postData) {
         </span>`
   }
 
-  if (isReply) {
-    if (!postData.replyTo._id) {
-      return console.error("replyTo is not populated")
-    }
+  if (postData.replyTo && postData.replyTo._id) {
 
     if (!postData.replyTo.postedBy._id) {
       return console.error("postedBy is not populated")
@@ -135,7 +159,13 @@ function createPostHtml(postData) {
                  </div>`
   }
 
-  return `<div class='post' data-id='${postData._id}'>
+  if (postedBy._id == userLoggedIn._id) {
+    closeButton = `<button class='deletePostIcon' data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+                    <i class='fas fa-times'></i>
+                  </button>`
+  }
+
+  return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
             <div class='postActionContainer'>
               ${repostText}
             </div>
@@ -148,10 +178,11 @@ function createPostHtml(postData) {
                   <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                   <span class='username'>@${postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
+                  ${closeButton}
                 </div>
                 ${replyFlag}
                 <div class='postBody'>
-                  <span>${postData.content}</span>
+                  <span>${postData.content ?? 'Original post was deleted'}</span>
                 </div>
                 <div class='postFooter'>
                   <div class='postButtonContainer'>
@@ -213,6 +244,23 @@ function outputPosts(results, container) {
 
   results.forEach(result => {
     const html = createPostHtml(result)
+    container.append(html)
+  })
+}
+
+function outputPostWithReplies(result, container) {
+  container.html("")
+
+  if (result.replyTo !== undefined && result.replyTo._id !== undefined) {
+    const html = createPostHtml(result.replyTo)
+    container.append(html)
+  }
+
+  const mainPostHtml = createPostHtml(result.postData, true)
+  container.append(mainPostHtml)
+
+  result.replies.forEach(reply => {
+    const html = createPostHtml(reply)
     container.append(html)
   })
 }

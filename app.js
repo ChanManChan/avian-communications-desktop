@@ -31,10 +31,12 @@ const loginRoute = require('./routes/auth/login')
 const registerRoute = require('./routes/auth/register')
 const logoutRoute = require('./routes/auth/logout')
 const postsRoute = require('./routes/api/posts')
+const postRoute = require('./routes/post')
 
 app.use("/login", loginRoute)
 app.use("/register", registerRoute)
 app.use("/logout", logoutRoute)
+app.use("/posts", postRoute)
 app.use("/api/posts", postsRoute)
 
 app.get("/", middleware.requireLogin, (req, res, next) => {

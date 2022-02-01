@@ -25,3 +25,21 @@ mixin createReplyModal(userLoggedIn)
         .modal-footer
           button.btn.btn-secondary(type='button' data-dismiss='modal') Close
           button#submitReplyButton(type='button', disabled="") Reply
+
+mixin createDeletePostModal()
+  #deletePostModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='deletePostModalCenterTitle' aria-hidden='true')
+    .modal-dialog.modal-dialog-centered(role='document')
+      .modal-content
+        .modal-header
+          h5#deletePostModalLongTitle.modal-title Delete the post?
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p You won't be able to undo this delete
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+          button#deletePostButton(type='button') Delete
+
+mixin createPostModals(userLoggedIn)
+  +createReplyModal(userLoggedIn)
+  +createDeletePostModal()
