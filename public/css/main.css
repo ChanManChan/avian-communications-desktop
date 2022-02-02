@@ -279,3 +279,101 @@ nav a img#logo {
 .postContentContainer .deletePostIcon:hover {
   background-color: var(--lightGrey);
 }
+
+span.errorMessage {
+  padding: var(--spacing);
+}
+
+.profileHeaderContainer .coverPhotoContainer {
+  height: 180px;
+  background-color: var(--primary);
+  position: relative;
+}
+
+.profileHeaderContainer .userImageContainer {
+  height: 132px;
+  width: 132px;
+  margin-left: var(--spacing);
+  position: absolute;
+  bottom: 0;
+  transform: translateY(50%);
+}
+
+.profileHeaderContainer .userImageContainer img {
+  border: 4px solid #fff;
+}
+
+.profileHeaderContainer .profileButtonContainer {
+  text-align: right;
+  padding: var(--spacing);
+  min-height: 66px;
+}
+
+.profileHeaderContainer .profileButtonContainer .profileButton,
+.profileHeaderContainer .profileButtonContainer .followButton {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-weight: bold;
+  padding: 5px var(--spacing);
+  border-radius: 60px;
+  display: inline-block;
+  margin-left: var(--spacing);
+  cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.profileHeaderContainer .profileButtonContainer .profileButton:hover,
+.profileHeaderContainer .profileButtonContainer .followButton:hover,
+.profileHeaderContainer .profileButtonContainer .followButton.following {
+  background-color: var(--primaryLight);
+  color: #fff;
+}
+
+.profileHeaderContainer .userDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--spacing);
+}
+
+.profileHeaderContainer .followersContainer span.value {
+  font-weight: 700;
+  margin-right: 5px;
+}
+
+.profileHeaderContainer .followersContainer span:not(.value) {
+  color: var(--greyText);
+}
+
+.profileHeaderContainer .followersContainer a {
+  margin-right: var(--spacing);
+}
+
+.profileHeaderContainer .followersContainer a:hover {
+  border-bottom: 1px solid #000;
+}
+
+.tabsContainer {
+  display: flex;
+  border-bottom: 1px solid var(--lightGrey);
+}
+
+.tabsContainer .tab {
+  flex: 1;
+  height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--greyText);
+  font-weight: 700;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.tabsContainer .tab.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tabsContainer .tab:hover {
+  color: var(--light);
+  background-color: var(--primaryLight);
+}

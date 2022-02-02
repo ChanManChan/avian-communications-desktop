@@ -121,10 +121,10 @@ function getPostIdFromElement(element) {
 }
 
 function createPostHtml(postData, largeFont = false) {
-  const postedBy = postData.postedBy
-  const isRepost = postData.repostData !== undefined
+  const isRepost = 'repostData' in postData
   const repostedBy = isRepost ? postData.postedBy.username : null
-  postData = isRepost ? postData.repostData : postData
+  const repostData = isRepost ? postData.repostData : null
+  const postedBy = isRepost ? repostData.postedBy : postData.postedBy
 
   if (postedBy._id === undefined) {
     return console.error("User object not populated")
@@ -137,7 +137,7 @@ function createPostHtml(postData, largeFont = false) {
   const largeFontClass = largeFont ? "largeFont" : ""
   let repostText = ''
   let replyFlag = ''
-  let closeButton = ''
+  let deleteButton = ''
 
   if (isRepost) {
     repostText = `
@@ -160,9 +160,9 @@ function createPostHtml(postData, largeFont = false) {
   }
 
   if (postedBy._id == userLoggedIn._id) {
-    closeButton = `<button class='deletePostIcon' data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
-                    <i class='fas fa-times'></i>
-                  </button>`
+    deleteButton = `<button class='deletePostIcon' data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+                      <i class='fas fa-times'></i>
+                    </button>`
   }
 
   return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
@@ -178,11 +178,11 @@ function createPostHtml(postData, largeFont = false) {
                   <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                   <span class='username'>@${postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
-                  ${closeButton}
+                  ${deleteButton}
                 </div>
                 ${replyFlag}
                 <div class='postBody'>
-                  <span>${postData.content ?? 'Original post was deleted'}</span>
+                  <span>${isRepost ? repostData?.content ?? 'Original post was deleted' : postData.content}</span>
                 </div>
                 <div class='postFooter'>
                   <div class='postButtonContainer'>
@@ -251,7 +251,7 @@ function outputPosts(results, container) {
 function outputPostWithReplies(result, container) {
   container.html("")
 
-  if (result.replyTo !== undefined && result.replyTo._id !== undefined) {
+  if (result.replyTo && result.replyTo._id !== undefined) {
     const html = createPostHtml(result.replyTo)
     container.append(html)
   }
