@@ -1,6 +1,5 @@
 body {
-  background-color: #c62828;
-  font-family: 'Roboto Condensed', sans-serif;
+  background-color: var(--primary);
 }
 
 .wrapper {
@@ -37,7 +36,7 @@ input[type="password"] {
 }
 
 input[type="submit"] {
-  background-color: #c62828;
+  background-color: var(--primary);
   color: #fff;
   border: none;
   border-radius: 2px;

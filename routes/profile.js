@@ -28,6 +28,22 @@ router.get("/:username/replies", async (req, res, next) => {
   res.status(200).render("profile", payload)
 })
 
+router.get("/:username/following", async (req, res, next) => {
+  const userLoggedIn = req.session.user
+  const username = req.params.username
+  const payload = await getPayload(username, userLoggedIn)
+  payload.selectedTab = "following"
+  res.status(200).render("followers-following", payload)
+})
+
+router.get("/:username/followers", async (req, res, next) => {
+  const userLoggedIn = req.session.user
+  const username = req.params.username
+  const payload = await getPayload(username, userLoggedIn)
+  payload.selectedTab = "followers"
+  res.status(200).render("followers-following", payload)
+})
+
 async function getPayload(identifier, userLoggedIn) {
   let user = await User.findOne({ username: identifier })
   if (user == null) {

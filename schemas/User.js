@@ -33,7 +33,9 @@ const UserSchema = new Schema({
     default: "/assets/default-profile.jpg"
   },
   likes: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-  reposts: [{ type: Schema.Types.ObjectId, ref: 'Post' }]
+  reposts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  followers: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true })
 
 const User = mongoose.model('User', UserSchema)

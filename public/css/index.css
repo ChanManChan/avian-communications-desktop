@@ -1,0 +1,48 @@
+:root {
+  --primary: #d32f2f;
+  --primaryLight: #ff5f52;
+  --primaryDark: #8e0000;
+  --green: rgb(23, 191, 99);
+  --light: #f2f2f2;
+  --lightGrey: rgb(230, 236, 240);
+  --greyText: rgb(101, 119, 134);
+  --greyButtonText: rgba(0, 0, 0, 0.34);
+  --dark: #424242;
+  --spacing: 15px;
+}
+
+*,
+*::after,
+*::before {
+  outline-color: var(--primaryDark);
+  letter-spacing: 0px;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+a,
+a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+i {
+  pointer-events: none;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  color: var(--greyButtonText);
+}
+
+h1 {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
+}

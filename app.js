@@ -30,9 +30,11 @@ app.use(session({
 const loginRoute = require('./routes/auth/login')
 const registerRoute = require('./routes/auth/register')
 const logoutRoute = require('./routes/auth/logout')
-const postsRoute = require('./routes/api/posts')
 const postRoute = require('./routes/post')
 const profileRoute = require('./routes/profile')
+
+const postsApiRoute = require('./routes/api/posts')
+const usersApiRoute = require('./routes/api/users')
 
 app.use("/login", loginRoute)
 app.use("/register", registerRoute)
@@ -40,7 +42,8 @@ app.use("/logout", logoutRoute)
 app.use("/posts", postRoute)
 app.use("/profile", profileRoute)
 
-app.use("/api/posts", postsRoute)
+app.use("/api/posts", postsApiRoute)
+app.use("/api/users", usersApiRoute)
 
 app.get("/", middleware.requireLogin, (req, res, next) => {
   const payload = {

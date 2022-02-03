@@ -4,16 +4,28 @@ const User = require('../../schemas/User')
 const Post = require('../../schemas/Post')
 
 router.get("/", async (req, res, next) => {
- const searchFilter = req.query
+  const searchFilter = req.query
 
- if (searchFilter.isReply) {
-   const isReply = searchFilter.isReply == "true"
-   searchFilter.replyTo = { $exists: isReply }
-   delete searchFilter.isReply
- }
+  if (searchFilter.isReply) {
+    const isReply = searchFilter.isReply == "true"
+    searchFilter.replyTo = { $exists: isReply }
+    delete searchFilter.isReply
+  }
 
- const posts = await getPosts(searchFilter)
- res.status(200).send(posts)
+  if (searchFilter.followingOnly) {
+    const currentUser = req.session.user
+    const followingOnly = searchFilter.followingOnly == "true"
+
+    if (followingOnly) {
+      const userIds = [...currentUser.following ?? []]
+      userIds.push(currentUser._id)
+      searchFilter.postedBy = { $in: userIds }
+    }
+    delete searchFilter.followingOnly
+  }
+
+  const posts = await getPosts(searchFilter)
+  res.status(200).send(posts)
 })
 
 router.get("/:id", async (req, res, next) => {
