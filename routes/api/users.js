@@ -1,5 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const path = require('path')
+const fs = require('fs')
+const multer = require('multer')
+const upload = multer({ dest: "uploads/" })
 const User = require('../../schemas/User')
 
 router.put("/:userId/follow", async (req, res, next) => {
@@ -28,6 +32,44 @@ router.get("/:userId/followers", async (req, res, next) => {
   const userId = req.params.userId
   const results = await User.findById(userId).populate("followers").catch(e => res.sendStatus(500))
   res.status(200).send(results)
+})
+
+router.post("/profile-picture", upload.single("croppedImage"), async (req, res, next) => {
+  const currentUser = req.session.user
+  if (!req.file) {
+    console.error("No file uploaded with ajax request")
+    return res.sendStatus(400)
+  }
+  const filePath = `/uploads/profile-pictures/${req.file.filename}.png`
+  const tempPath = req.file.path
+  const targetPath = path.join(__dirname, `../../${filePath}`)
+  fs.rename(tempPath, targetPath, async error => {
+    if (error != null) {
+      console.error(error)
+      return res.sendStatus(500)
+    }
+    req.session.user = await User.findByIdAndUpdate(currentUser._id, { profilePic: filePath }, { new: true })
+    res.sendStatus(204)
+  })
+})
+
+router.post("/cover-picture", upload.single("croppedImage"), async (req, res, next) => {
+  const currentUser = req.session.user
+  if (!req.file) {
+    console.error("No file uploaded with ajax request")
+    return res.sendStatus(400)
+  }
+  const filePath = `/uploads/cover-pictures/${req.file.filename}.png`
+  const tempPath = req.file.path
+  const targetPath = path.join(__dirname, `../../${filePath}`)
+  fs.rename(tempPath, targetPath, async error => {
+    if (error != null) {
+      console.error(error)
+      return res.sendStatus(500)
+    }
+    req.session.user = await User.findByIdAndUpdate(currentUser._id, { coverPhoto: filePath }, { new: true })
+    res.sendStatus(204)
+  })
 })
 
 module.exports = router

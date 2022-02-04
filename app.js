@@ -45,6 +45,8 @@ app.use("/profile", profileRoute)
 app.use("/api/posts", postsApiRoute)
 app.use("/api/users", usersApiRoute)
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
 app.get("/", middleware.requireLogin, (req, res, next) => {
   const payload = {
     pageTitle: "Home",

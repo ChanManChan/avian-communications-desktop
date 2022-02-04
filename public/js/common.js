@@ -1,3 +1,5 @@
+let cropper
+
 $("#postTextarea, #replyTextarea").keyup(e => {
   const textbox = $(e.target)
   const value = textbox.val().trim()
@@ -63,6 +65,90 @@ $("#deletePostButton").click(event => {
       $(`div[data-id=${postData._id}]`).remove()
       $("#deletePostModal").modal('hide')
     }
+  })
+})
+
+$("#filePhoto").change(function() {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader()
+    reader.onload = e => {
+      const image = document.getElementById("imagePreview")
+      image.src = e.target.result
+      if (cropper !== undefined) {
+        cropper.destroy()
+      }
+
+      cropper = new Cropper(image, { 
+        aspectRatio: 1 / 1,
+        background: false
+      })
+    }
+    reader.readAsDataURL(this.files[0])
+  }
+})
+
+$("#imageUploadButton").click(() => {
+  const canvas = cropper.getCroppedCanvas()
+  if (!canvas) {
+    console.error("Could not upload image. Make sure it is an image file")
+    return
+  }
+  canvas.toBlob(blob => {
+    const formData = new FormData()
+    formData.append("croppedImage", blob)
+
+    $.ajax({
+      url: "/api/users/profile-picture",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: () => {
+        location.reload()
+      }
+    })
+  })
+})
+
+$("#coverPhoto").change(function() {
+  if (this.files && this.files[0]) {
+    const reader = new FileReader()
+    reader.onload = e => {
+      const image = document.getElementById("coverPreview")
+      image.src = e.target.result
+      if (cropper !== undefined) {
+        cropper.destroy()
+      }
+
+      cropper = new Cropper(image, { 
+        aspectRatio: 16 / 9,
+        background: false
+      })
+    }
+    reader.readAsDataURL(this.files[0])
+  }
+})
+
+$("#coverPhotoUploadButton").click(() => {
+  const canvas = cropper.getCroppedCanvas()
+  if (!canvas) {
+    console.error("Could not upload image. Make sure it is an image file")
+    return
+  }
+  canvas.toBlob(blob => {
+    const formData = new FormData()
+    formData.append("croppedImage", blob)
+
+    $.ajax({
+      url: "/api/users/cover-picture",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: () => {
+        location.reload()
+      }
+    })
   })
 })
 

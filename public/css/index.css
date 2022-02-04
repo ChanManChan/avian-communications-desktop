@@ -5,6 +5,7 @@
   --green: rgb(23, 191, 99);
   --light: #f2f2f2;
   --lightGrey: rgb(230, 236, 240);
+  --darkGrey: rgba(0, 0, 0, 0.6);
   --greyText: rgb(101, 119, 134);
   --greyButtonText: rgba(0, 0, 0, 0.34);
   --dark: #424242;
@@ -39,6 +40,7 @@ button {
   background-color: transparent;
   border: none;
   color: var(--greyButtonText);
+  outline: none;
 }
 
 h1 {
