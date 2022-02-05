@@ -92,7 +92,9 @@ nav a img#logo {
 #submitReplyButton,
 #deletePostButton,
 #imageUploadButton,
-#coverPhotoUploadButton {
+#coverPhotoUploadButton,
+#pinPostButton,
+#unpinPostButton {
   background-color: var(--primary);
   color: var(--light);
   border: none;
@@ -106,7 +108,9 @@ nav a img#logo {
 #submitReplyButton:hover,
 #deletePostButton:hover,
 #imageUploadButton:hover,
-#coverPhotoUploadButton:hover {
+#coverPhotoUploadButton:hover,
+#pinPostButton:hover,
+#unpinPostButton:hover {
   background-color: var(--primaryDark);
   color: white;
 }
@@ -115,7 +119,9 @@ nav a img#logo {
 #submitReplyButton:disabled,
 #deletePostButton:disabled,
 #imageUploadButton:disabled,
-#coverPhotoUploadButton:disabled {
+#coverPhotoUploadButton:disabled,
+#pinPostButton:disabled,
+#unpinPostButton:disabled {
   background-color: var(--primaryLight);
   cursor: unset;
 }
@@ -228,7 +234,8 @@ nav a img#logo {
   flex: 1;
 }
 
-.postContentContainer .deletePostIcon {
+.postContentContainer .deletePostIcon,
+.postContentContainer .confirmPinIcon {
   cursor: pointer;
   pointer-events: all;
   border-radius: 50%;
@@ -238,8 +245,17 @@ nav a img#logo {
   transition: background-color 0.2s ease-out;
 }
 
-.postContentContainer .deletePostIcon:hover {
+.postContentContainer .deletePostIcon:hover,
+.postContentContainer .confirmPinIcon:hover {
   background-color: var(--lightGrey);
+}
+
+.postContentContainer .confirmPinIcon {
+  margin-right: 8px;
+}
+
+.postContentContainer .confirmPinIcon i {
+  vertical-align: middle;
 }
 
 span.errorMessage {
@@ -401,4 +417,17 @@ span.errorMessage {
   width: 100%;
   object-position: bottom;
   object-fit: cover;
+}
+
+.confirmPinIcon.active {
+  color: var(--primary);
+}
+
+.pinnedPostText {
+  font-size: 12px;
+  color: var(--greyText);
+}
+
+.pinnedPostContainer {
+  border-bottom: 10px solid var(--lightGrey);
 }

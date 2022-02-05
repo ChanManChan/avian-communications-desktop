@@ -1,4 +1,5 @@
 let cropper
+let pinnedPostId
 
 $("#postTextarea, #replyTextarea").keyup(e => {
   const textbox = $(e.target)
@@ -56,6 +57,18 @@ $("#deletePostModal").on("show.bs.modal", event => {
   $("#deletePostButton").data("id", postId)
 })
 
+$("#confirmPinModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+  $("#pinPostButton").data("id", postId)
+})
+
+$("#unpinModal").on("show.bs.modal", event => {
+  const button = $(event.relatedTarget)
+  const postId = getPostIdFromElement(button)
+  $("#unpinPostButton").data("id", postId)
+})
+
 $("#deletePostButton").click(event => {
   const postId = $(event.target).data("id")
   $.ajax({
@@ -64,6 +77,44 @@ $("#deletePostButton").click(event => {
     success: postData => {
       $(`div[data-id=${postData._id}]`).remove()
       $("#deletePostModal").modal('hide')
+    }
+  })
+})
+
+$("#pinPostButton").click(event => {
+  const postId = $(event.target).data("id")
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "PUT",
+    data: JSON.stringify({ previousPinned: pinnedPostId, pinned: true }),
+    processData: false,
+    contentType: 'application/json',
+    success: (postData, status, xhr) => {
+      if (xhr.status != 200) {
+        console.error("could not pin post")
+        return
+      }
+      pinnedPostId = postData.pinned ? postData._id : ""
+      $("#confirmPinModal").modal('hide')
+    }
+  })
+})
+
+$("#unpinPostButton").click(event => {
+  const postId = $(event.target).data("id")
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "PUT",
+    data: JSON.stringify({ previousPinned: pinnedPostId, pinned: false }),
+    processData: false,
+    contentType: 'application/json',
+    success: (postData, status, xhr) => {
+      if (xhr.status != 200) {
+        console.error("could not unpin post")
+        return
+      }
+      pinnedPostId = postData.pinned ? postData._id : ""
+      $("#unpinModal").modal('hide')
     }
   })
 })
@@ -243,6 +294,10 @@ function createPostHtml(postData, largeFont = false) {
   const repostData = isRepost ? postData.repostData : null
   const postedBy = isRepost ? repostData.postedBy : postData.postedBy
 
+  if (!pinnedPostId) {
+    pinnedPostId = postData.pinned ? postData._id: ""  
+  }
+
   if (postedBy._id === undefined) {
     return console.error("User object not populated")
   }
@@ -254,7 +309,8 @@ function createPostHtml(postData, largeFont = false) {
   const largeFontClass = largeFont ? "largeFont" : ""
   let repostText = ''
   let replyFlag = ''
-  let deleteButton = ''
+  let buttons = ''
+  let pinnedPostText = ''
 
   if (isRepost) {
     repostText = `
@@ -276,10 +332,25 @@ function createPostHtml(postData, largeFont = false) {
                  </div>`
   }
 
+  if (postData.pinned) {
+    pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
+  }
+
   if (postedBy._id == userLoggedIn._id) {
-    deleteButton = `<button class='deletePostIcon' data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
-                      <i class='fas fa-times'></i>
-                    </button>`
+    let pinnedClass = ''
+    let dataTarget = '#confirmPinModal'
+
+    if (postData.pinned) {
+      pinnedClass = 'active'
+      dataTarget = '#unpinModal'
+    }
+    
+    buttons = `<button class='confirmPinIcon ${pinnedClass}' data-id="${postData._id}" data-toggle="modal" data-target="${dataTarget}">
+                <i class="fas fa-thumbtack"></i>
+               </button>
+               <button class='deletePostIcon' data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal">
+                <i class='fas fa-times'></i>
+               </button>`
   }
 
   return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
@@ -291,11 +362,14 @@ function createPostHtml(postData, largeFont = false) {
                 <img src='${postedBy.profilePic}'>
               </div>
               <div class='postContentContainer'>
+                <div class='pinnedPostText'>
+                  ${pinnedPostText}
+                </div>
                 <div class='header'>
                   <a href='/profile/${postedBy.username}' class='displayName'>${displayName}</a>
                   <span class='username'>@${postedBy.username}</span>
                   <span class='date'>${timestamp}</span>
-                  ${deleteButton}
+                  ${buttons}
                 </div>
                 ${replyFlag}
                 <div class='postBody'>

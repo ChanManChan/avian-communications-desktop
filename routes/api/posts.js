@@ -44,12 +44,30 @@ router.get("/:id", async (req, res, next) => {
   result.replies = await getPosts({ replyTo: postId })
 
   res.status(200).send(result)
- })
+})
 
- router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
   const post = await Post.findByIdAndDelete(req.params.id).catch(() => res.sendStatus(500))
   res.status(202).send(post)
- })
+})
+
+router.put("/:id", async (req, res, next) => {
+  const previousPinnedId = req.body.previousPinned
+  const currentPinnedId = req.params.id
+  let post
+
+  if (previousPinnedId) {
+    post = await Post.findByIdAndUpdate(previousPinnedId, { pinned: false }, { new: true }).catch(() => res.sendStatus(500))
+    delete req.body.previousPinned
+  }
+
+  if (previousPinnedId == currentPinnedId) {
+    return res.status(200).send(post)
+  }
+
+  post = await Post.findByIdAndUpdate(currentPinnedId, req.body, { new: true }).catch(() => res.sendStatus(500))
+  res.status(200).send(post)
+})
 
 router.post("/", async (req, res, next) => {
   if (!req.body.content) {
