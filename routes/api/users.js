@@ -49,7 +49,7 @@ router.post("/profile-picture", upload.single("croppedImage"), async (req, res, 
       return res.sendStatus(500)
     }
     req.session.user = await User.findByIdAndUpdate(currentUser._id, { profilePic: filePath }, { new: true })
-    res.sendStatus(204)
+    res.status(200).send(req.session.user)
   })
 })
 
@@ -68,7 +68,7 @@ router.post("/cover-picture", upload.single("croppedImage"), async (req, res, ne
       return res.sendStatus(500)
     }
     req.session.user = await User.findByIdAndUpdate(currentUser._id, { coverPhoto: filePath }, { new: true })
-    res.sendStatus(204)
+    res.status(200).send(req.session.user)
   })
 })
 

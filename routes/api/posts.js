@@ -65,7 +65,7 @@ router.put("/:id", async (req, res, next) => {
     return res.status(200).send(post)
   }
 
-  post = await Post.findByIdAndUpdate(currentPinnedId, req.body, { new: true }).catch(() => res.sendStatus(500))
+  post = await Post.findByIdAndUpdate(currentPinnedId, req.body, { new: true }).populate("postedBy").catch(() => res.sendStatus(500))
   res.status(200).send(post)
 })
 

@@ -1,5 +1,6 @@
 let cropper
 let pinnedPostId
+const pinnedPostIndicator = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
 
 $("#postTextarea, #replyTextarea").keyup(e => {
   const textbox = $(e.target)
@@ -94,8 +95,21 @@ $("#pinPostButton").click(event => {
         console.error("could not pin post")
         return
       }
+
+      if (pinnedPostId) {
+        removePinnedPost(pinnedPostId)
+      }
+
       pinnedPostId = postData.pinned ? postData._id : ""
       $("#confirmPinModal").modal('hide')
+      const thumbtackButton = $(`button.confirmPinIcon[data-id="${postId}"]`)
+      thumbtackButton.addClass('active')
+      thumbtackButton.attr("data-target", "#unpinModal")
+      $(`div.post[data-id="${postId}"] div.pinnedPostText`).html(pinnedPostIndicator)
+      if (window.location.pathname.includes("profile")) {
+        $(".pinnedPostContainer").show()
+        outputPinnedPost(postData, $(".pinnedPostContainer"))
+      }
     }
   })
 })
@@ -115,9 +129,21 @@ $("#unpinPostButton").click(event => {
       }
       pinnedPostId = postData.pinned ? postData._id : ""
       $("#unpinModal").modal('hide')
+      removePinnedPost(postId)
+      if (window.location.pathname.includes("profile")) {
+        $(".pinnedPostContainer div.post").remove()
+        $(".pinnedPostContainer").hide()
+      }
     }
   })
 })
+
+function removePinnedPost(postId) {
+  const thumbtackButton = $(`button.confirmPinIcon[data-id="${postId}"]`)
+  thumbtackButton.removeClass('active')
+  thumbtackButton.attr("data-target", "#confirmPinModal")
+  $(`div.post[data-id="${postId}"] div.pinnedPostText`).html("")
+}
 
 $("#filePhoto").change(function() {
   if (this.files && this.files[0]) {
@@ -154,14 +180,16 @@ $("#imageUploadButton").click(() => {
       data: formData,
       processData: false,
       contentType: false,
-      success: () => {
-        location.reload()
+      success: (postData, status, xhr) => {
+        if (xhr.status == 200) {
+          applyProfilePicture(postData)
+        }
       }
     })
   })
 })
 
-$("#coverPhoto").change(function() {
+$("#coverPhotoInput").change(function() {
   if (this.files && this.files[0]) {
     const reader = new FileReader()
     reader.onload = e => {
@@ -196,12 +224,39 @@ $("#coverPhotoUploadButton").click(() => {
       data: formData,
       processData: false,
       contentType: false,
-      success: () => {
-        location.reload()
+      success: (postData, status, xhr) => {
+        if (xhr.status == 200) {
+          applyCoverPhoto(postData)  
+        }
       }
     })
   })
 })
+
+function applyCoverPhoto(postData) {
+  $('div.coverPhotoContainer img#coverPhoto').remove()
+  const coverPhotoUrl = postData.coverPhoto
+  const coverPhoto = `<img id='coverPhoto' src='${coverPhotoUrl}' alt='cover-photo'>`
+  $("div.coverPhotoContainer").prepend(coverPhoto)
+  $("input#coverPhotoInput").val('')
+  $("#coverPhotoUploadModal").modal('hide')
+  $("img#coverPreview").removeAttr("src class")
+  cropper.destroy()
+}
+
+function applyProfilePicture(postData) {
+  $('div.userImageContainer img#profilePicture').remove()
+  $('div.userImageContainer img#userProfilePicture').remove()
+  const profilePictureUrl = postData.profilePic
+  const mainProfilePicture = `<img id='profilePicture' src='${profilePictureUrl}' alt='User profile image'>`
+  const postProfilePicture = `<img id='userProfilePicture' src='${profilePictureUrl}' alt='User profile image'>`
+  $("div.profileHeaderContainer div.userImageContainer").prepend(mainProfilePicture)
+  $("div.post div.userImageContainer").prepend(postProfilePicture)
+  $("input#filePhoto").val('')
+  $("#imageUploadModal").modal('hide')
+  $("img#imagePreview").removeAttr("src class")
+  cropper.destroy()
+}
 
 $(document).on("click", ".likeButton", e => {
   const button = $(e.target)
@@ -333,7 +388,7 @@ function createPostHtml(postData, largeFont = false) {
   }
 
   if (postData.pinned) {
-    pinnedPostText = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
+    pinnedPostText = pinnedPostIndicator
   }
 
   if (postedBy._id == userLoggedIn._id) {
@@ -359,7 +414,7 @@ function createPostHtml(postData, largeFont = false) {
             </div>
             <div class='mainContentContainer'>
               <div class='userImageContainer'>
-                <img src='${postedBy.profilePic}'>
+                <img id='userProfilePicture' src='${postedBy.profilePic}' alt='User profile image'>
               </div>
               <div class='postContentContainer'>
                 <div class='pinnedPostText'>
@@ -454,4 +509,15 @@ function outputPostWithReplies(result, container) {
     const html = createPostHtml(reply)
     container.append(html)
   })
+}
+
+function outputPinnedPost(result, container) {
+  if (result.length == 0) {
+    container.hide()
+    return
+  }
+
+  container.html("")
+  const html = createPostHtml(Array.isArray(result) ? result[0] : result)
+  container.append(html)
 }

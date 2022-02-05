@@ -21,14 +21,3 @@ function loadReplies() {
     outputPosts(results, $(".postsContainer"))
   })
 }
-
-function outputPinnedPost(result, container) {
-  if (result.length == 0) {
-    container.hide()
-    return
-  }
-
-  container.html("")
-  const html = createPostHtml(result[0])
-  container.append(html)
-}

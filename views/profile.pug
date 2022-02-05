@@ -13,12 +13,12 @@ block content
       .coverPhotoSection
         .coverPhotoContainer
           if profileUser.coverPhoto
-            img(src=profileUser.coverPhoto, alt="cover-photo")
+            img#coverPhoto(src=profileUser.coverPhoto, alt="cover-photo")
           if profileUser._id == userLoggedIn._id
             button.coverPhotoButton(data-toggle="modal", data-target="#coverPhotoUploadModal")
               i.fas.fa-camera
         .userImageContainer
-          img(src=profileUser.profilePic, alt="User profile image")
+          img#profilePicture(src=profileUser.profilePic, alt="User profile image")
           if profileUser._id == userLoggedIn._id
             button.profilePictureButton(data-toggle="modal", data-target="#imageUploadModal")
               i.fas.fa-camera
@@ -42,10 +42,12 @@ block content
           a(href=`/profile/${profileUser.username}/followers`) 
             span#followersValue.value #{followersCount}
             span Followers
+    - postsTab = selectedTab != "replies"
     .tabsContainer
-      +createTab("Posts", `/profile/${profileUser.username}`, selectedTab != "replies")
+      +createTab("Posts", `/profile/${profileUser.username}`, postsTab)
       +createTab("Replies", `/profile/${profileUser.username}/replies`, selectedTab == "replies")
-    .pinnedPostContainer
+    if postsTab
+      .pinnedPostContainer
     .postsContainer
     +createPostModals(userLoggedIn)
     +createImageUploadModal()
