@@ -43,6 +43,9 @@ nav a img#logo {
 .titleContainer {
   padding: var(--spacing);
   border-bottom: 1px solid var(--lightGrey);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .postFormContainer {
@@ -430,4 +433,83 @@ span.errorMessage {
 
 .pinnedPostContainer {
   border-bottom: 10px solid var(--lightGrey);
+}
+
+.searchBarContainer {
+  position: relative;
+  color: var(--greyText);
+  padding: 10px var(--spacing);
+}
+
+.searchBarContainer i {
+  position: absolute;
+  top: 50%;
+  left: 25px;
+  transform: translateY(-50%);
+}
+
+.searchBarContainer #searchBox {
+  height: 36px;
+  width: 100%;
+  padding: 5px var(--spacing);
+  text-indent: 15px;
+  border-radius: 50px;
+  background-color: var(--lightGrey);
+  border: none;
+  color: var(--greyText);
+}
+
+.chatPageContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatPageContainer .chatTitleBar {
+  border-bottom: 1px solid var(--lightGrey);
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 10px;
+}
+
+.chatPageContainer .chatTitleBar label {
+  margin-right: 10px;
+  margin-bottom: unset;
+}
+
+.chatPageContainer .chatTitleBar #selectedUsers {
+  flex: 1;
+}
+
+.chatPageContainer .chatTitleBar #userSearchTextbox {
+  border: none;
+  width: 100%;
+  font-weight: 300;
+  min-width: 350px;
+  padding: 5px;
+}
+
+.chatPageContainer #createChatButton {
+  border: none;
+  background-color: var(--primary);
+  color: var(--light);
+  padding: 7px 20px;
+  margin: 10px auto;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.chatPageContainer #createChatButton:disabled {
+  background-color: var(--primaryLight);
+  pointer-events: none;
+}
+
+.chatPageContainer #createChatButton:hover {
+  background-color: var(--primaryDark);
+  color: #fff;
+}
+
+.resultsContainer .user.clickable {
+  cursor: pointer;
 }

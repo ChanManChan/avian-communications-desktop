@@ -24,6 +24,11 @@ router.get("/", async (req, res, next) => {
     delete searchFilter.followingOnly
   }
 
+  if (searchFilter.search) {
+    searchFilter.content = { $regex: searchFilter.search, $options: "i" }
+    delete searchFilter.search
+  }
+
   const posts = await getPosts(searchFilter)
   res.status(200).send(posts)
 })
@@ -111,8 +116,11 @@ router.post("/:id/repost", async (req, res, next) => {
   }
 
   req.session.user = await User.findByIdAndUpdate(userId, { [option]: { reposts: repost._id } }, { new: true }).catch(e => res.sendStatus(400))
-  const post = await Post.findByIdAndUpdate(postId, { [option]: { repostUsers: userId } }, { new: true }).catch(e => res.sendStatus(400))
-  res.status(200).send(post)
+  await Post.findByIdAndUpdate(postId, { [option]: { repostUsers: userId } }, { new: true }).catch(e => res.sendStatus(400))
+  repost = await Post.populate(repost, { path: "repostData" })
+  repost = await User.populate(repost, { path: "postedBy" })
+  repost = await User.populate(repost, { path: "repostData.postedBy" })
+  res.status(200).send(repost)
 })
 
 async function getPosts(filter) {

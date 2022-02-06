@@ -1,5 +1,6 @@
 let cropper
 let pinnedPostId
+let timer
 const pinnedPostIndicator = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
 
 $("#postTextarea, #replyTextarea").keyup(e => {
@@ -286,10 +287,17 @@ $(document).on("click", ".repostButton", e => {
       type: "POST",
       success: postData => {
         button.find("span").text(postData.repostUsers.length || "")
-        if (postData.repostUsers.includes(userLoggedIn._id)) {
+        const originalPostId = postData.repostData._id
+        if (postData.repostData.repostUsers.includes(userLoggedIn._id)) {
           button.addClass("active")
+          const html = createPostHtml(postData)
+          $("div.postsContainer").prepend(html)
+          $(`div.post[data-id="${originalPostId}"] button.repostButton.active span#repostCount`).text(postData.repostData.repostUsers.length || "")
         } else {
+          const repostId = postData._id
           button.removeClass("active")
+          $(`div.post[data-id="${repostId}"]`).remove()
+          $(`div.post[data-id="${originalPostId}"] button.repostButton span#repostCount`).text(postData.repostData.repostUsers.length || "")
         }
       }
     })
@@ -439,7 +447,7 @@ function createPostHtml(postData, largeFont = false) {
                   <div class='postButtonContainer green'>
                     <button class='repostButton ${repostButtonActiveClass}'>
                       <i class='fas fa-retweet'></i>
-                      <span>${postData.repostUsers.length || ""}</span>
+                      <span id='repostCount'>${postData.repostUsers.length || ""}</span>
                     </button>
                   </div>
                   <div class='postButtonContainer red'>
@@ -520,4 +528,45 @@ function outputPinnedPost(result, container) {
   container.html("")
   const html = createPostHtml(Array.isArray(result) ? result[0] : result)
   container.append(html)
+}
+
+function outputUsers(users, container) {
+  container.html("")
+  users.forEach(user => {
+    const html = createUserHtml(user, true)
+    container.append(html)
+  })
+
+  if (users.length == 0) {
+    container.append("<span class='noResults'>No results found</span>")
+  }
+}
+
+function createUserHtml(userData, showFollowButton) {
+  const name = userData.firstName + ' ' + userData.lastName
+  const isFollowing = userLoggedIn.following && userLoggedIn.following.includes(userData._id)
+  const text = isFollowing ? "Following" : "Follow"
+  const buttonClass = isFollowing ? "followButton following" : "followButton"
+  let followButton = ''
+
+  if (showFollowButton && userLoggedIn._id != userData._id) {
+    followButton = `<div class='followButtonContainer'>
+                      <button class='${buttonClass}' data-id='${userData._id}'>
+                        ${text}
+                      </button>
+                    </div>`
+  }
+
+  return `<div class='user'>
+            <div class='userImageContainer'>
+              <img src='${userData.profilePic}'>
+            </div>
+            <div class='userDetailsContainer'>
+              <div class='header'>
+                <a href='/profile/${userData.username}'>${name}</a>
+                <span class='username'>@${userData.username}</span>
+              </div>
+            </div>
+            ${followButton}
+          </div>`
 }

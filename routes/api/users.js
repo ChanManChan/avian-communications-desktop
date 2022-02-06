@@ -6,6 +6,23 @@ const multer = require('multer')
 const upload = multer({ dest: "uploads/" })
 const User = require('../../schemas/User')
 
+router.get("/", async (req, res, next) => {
+  let searchFilter = req.query
+
+  if (searchFilter.search) {
+    searchFilter = {
+      $or: [
+        { firstName: { $regex: searchFilter.search, $options: "i" }},
+        { lastName: { $regex: searchFilter.search, $options: "i" }},
+        { username: { $regex: searchFilter.search, $options: "i" }}
+      ]
+    }
+  }
+
+  const results = await User.find(searchFilter).catch(() => res.sendStatus(500))
+  res.status(200).send(results)
+})
+
 router.put("/:userId/follow", async (req, res, next) => {
   const currentUserId = req.session.user._id
   const userId = req.params.userId
