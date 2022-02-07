@@ -4,8 +4,15 @@ $("#userSearchTextbox").keydown(e => {
   clearTimeout(timer)
   const textbox = $(e.target)
   
-  if (textbox.val() == "" && e.keycode == 8) {
-    // remove user from selection
+  if (textbox.val() == "" && (e.which == 8 || e.keyCode == 8)) {
+    selectedUsers.pop()
+    updateSelectedUsersHtml()
+    $(".resultsContainer").html("")
+
+    if (selectedUsers.length == 0) {
+      $("#createChatButton").prop("disabled", true)
+    }
+
     return
   }
 
@@ -17,6 +24,13 @@ $("#userSearchTextbox").keydown(e => {
       searchUsers(value)
     }
   }, 1000)
+})
+
+$("#createChatButton").click(() => {
+  const data = JSON.stringify(selectedUsers)
+  $.post("/api/chats", { users: data }, chat => {
+    window.location.href = `/messages/${chat._id}`
+  })
 })
 
 function searchUsers(searchTerm) {
@@ -42,7 +56,20 @@ function outputSelectableUsers(users, container) {
 
 function userSelected(user) {
   selectedUsers.push(user)
+  updateSelectedUsersHtml()
   $("#userSearchTextbox").val("").focus()
   $(".resultsContainer").html("")
   $("#createChatButton").prop("disabled", false)
+}
+
+function updateSelectedUsersHtml() {
+  const elements = []
+  selectedUsers.forEach(user => {
+    const fullName = user.firstName + " " + user.lastName
+    const userElement = $(`<span class='selectedUser'>${fullName}</span>`)
+    elements.push(userElement)
+  })
+
+  $(".selectedUser").remove()
+  $("#selectedUsers").prepend(elements)
 }

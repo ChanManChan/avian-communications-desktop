@@ -37,6 +37,7 @@ const messagesRoute = require('./routes/messages')
 
 const postsApiRoute = require('./routes/api/posts')
 const usersApiRoute = require('./routes/api/users')
+const chatsApiRoute = require('./routes/api/chats')
 
 app.use("/login", loginRoute)
 app.use("/register", registerRoute)
@@ -48,6 +49,7 @@ app.use("/messages", messagesRoute)
 
 app.use("/api/posts", postsApiRoute)
 app.use("/api/users", usersApiRoute)
+app.use("/api/chats", chatsApiRoute)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 

@@ -478,7 +478,20 @@ span.errorMessage {
 }
 
 .chatPageContainer .chatTitleBar #selectedUsers {
+  display: flex;
+  flex-wrap: wrap;
   flex: 1;
+}
+
+.chatPageContainer .chatTitleBar #selectedUsers .selectedUser {
+  white-space: nowrap;
+  font-weight: 300;
+  background-color: var(--primaryLight);
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  margin-right: 5px;
+  display: inline-block;
 }
 
 .chatPageContainer .chatTitleBar #userSearchTextbox {
@@ -487,6 +500,7 @@ span.errorMessage {
   font-weight: 300;
   min-width: 350px;
   padding: 5px;
+  flex: 1;
 }
 
 .chatPageContainer #createChatButton {
