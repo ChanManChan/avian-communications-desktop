@@ -25,4 +25,11 @@ router.post("/", async (req, res, next) => {
   res.status(200).send(chat)
 })
 
+router.get("/", async (req, res, next) => {
+  const chatList = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } }})
+                .populate("users")
+                .catch(() => res.sendStatus(500))
+  res.status(200).send(chatList)
+})
+
 module.exports = router

@@ -527,3 +527,66 @@ span.errorMessage {
 .resultsContainer .user.clickable {
   cursor: pointer;
 }
+
+.resultsContainer .resultListItem {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 7px;
+  border-bottom: 1px solid var(--lightGrey);
+  transition: background-color 0.2s ease-out;
+}
+
+.resultsContainer .resultListItem:hover {
+  background-color: var(--light);
+}
+
+.resultsContainer .resultListItem .resultsDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.resultsContainer .resultListItem .resultsDetailsContainer .heading {
+  font-weight: 700;
+}
+
+.resultsContainer .resultListItem .resultsDetailsContainer .subText {
+  color: var(--greyText);
+  font-size: 14px;
+}
+
+.resultsContainer .resultListItem .resultsImageContainer {
+  height: 40px;
+  width: 40px;
+  position: relative;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img {
+  height: 65%;
+  width: 65%;
+  position: absolute;
+  bottom: 0;
+  border: 2px solid white;
+}
+
+.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img:first-of-type {
+  top: 0;
+  right: 0;
+}
+
+.resultsContainer .resultListItem .resultsImageContainer img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

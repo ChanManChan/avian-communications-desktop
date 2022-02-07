@@ -41,4 +41,11 @@ input[type="submit"] {
   border: none;
   border-radius: 2px;
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+input[type="submit"]:hover {
+  background-color: var(--primaryDark);
+  color: var(--light);
 }
