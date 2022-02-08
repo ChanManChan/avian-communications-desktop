@@ -28,6 +28,7 @@ router.post("/", async (req, res, next) => {
 router.get("/", async (req, res, next) => {
   const chatList = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } }})
                 .populate("users")
+                .sort({ updatedAt: -1 })
                 .catch(() => res.sendStatus(500))
   res.status(200).send(chatList)
 })
