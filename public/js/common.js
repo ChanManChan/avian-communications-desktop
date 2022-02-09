@@ -570,3 +570,22 @@ function createUserHtml(userData, showFollowButton) {
             ${followButton}
           </div>`
 }
+
+function getChatName(chatData) {
+  let chatName = chatData.chatName
+
+  if (!chatName) {
+    const otherChatUsers = getOtherChatUsers(chatData.users)
+    const usernames = otherChatUsers.map(user => user.firstName + " " + user.lastName)
+    chatName = usernames.join(", ")
+  }
+  return chatName
+}
+
+function getOtherChatUsers(users) {
+  if (users.length == 1) {
+    return users
+  }
+
+  return users.filter(user => user._id != userLoggedIn._id)
+}

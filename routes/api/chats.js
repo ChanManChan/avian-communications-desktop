@@ -33,4 +33,17 @@ router.get("/", async (req, res, next) => {
   res.status(200).send(chatList)
 })
 
+router.put("/:chatId", async (req, res, next) => {
+  const chatId = req.params.chatId
+  const chat = await Chat.findByIdAndUpdate(chatId, req.body, { new: true }).catch(() => res.sendStatus(500))
+  res.status(200).send(chat)
+})
+
+router.get("/:chatId", async (req, res, next) => {
+  const chatId = req.params.chatId
+  const currentUserId = req.session.user._id
+  const chat = await Chat.findOne({ _id: chatId, users: { $elemMatch: { $eq: currentUserId }} }).populate("users").catch(() => res.sendStatus(500))
+  res.status(200).send(chat)
+})
+
 module.exports = router

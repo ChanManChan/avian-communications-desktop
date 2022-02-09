@@ -19,7 +19,10 @@
   letter-spacing: 0px;
 }
 
-body {
+html, body {
+  height: 100%;
+  min-height: 100%;
+  background-color: #fff;
   overflow-x: hidden;
   font-family: 'Roboto Condensed', sans-serif;
   font-weight: 400;
