@@ -154,6 +154,11 @@ nav a img#logo {
   flex: 1;
 }
 
+.chatPageContainer .mainContentContainer {
+  min-height: 0;
+  flex-basis: 0;
+}
+
 .postContentContainer {
   padding-left: var(--spacing);
   display: flex;
@@ -701,5 +706,97 @@ span.errorMessage {
 }
 
 #chatNameTextbox {
+  width: 100%;
+}
+
+.chatMessages .message {
+  padding-bottom: 2px;
+  list-style: none;
+}
+
+.chatMessages .message .messageContainer {
+  max-width: 55%;
+}
+
+.chatMessages .message .messageBody {
+  background-color: var(--light);
+  padding: 6px 12px;
+  border-radius: 18px;
+  font-size: 14px;
+  display: block;
+  width: fit-content;
+}
+
+.chatMessages .message.live .messageBody {
+  border-radius: 18px !important;
+}
+
+.chatMessages .message.mine .messageContainer {
+  margin-left: auto;
+}
+
+.chatMessages .message.mine .messageContainer .messageBody {
+  margin-left: auto;
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.chatMessages .message.mine.first .messageBody {
+  border-bottom-right-radius: 2px;
+}
+
+.chatMessages .message.mine:not(.first):not(.last) .messageBody {
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.chatMessages .message.mine.last .messageBody {
+  border-top-right-radius: 2px;
+}
+
+.chatMessages .message.theirs.first .messageBody {
+  border-bottom-left-radius: 2px;
+}
+
+.chatMessages .message.theirs:not(.first):not(.last) .messageBody {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+
+.chatMessages .message.theirs.last .messageBody {
+  border-top-left-radius: 2px;
+}
+
+.chatMessages .message .sentBy {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 5px;
+}
+
+.chatMessages .message .senderName {
+  color: var(--darkGrey);
+}
+
+.chatMessages .imageContainer {
+  height: 24px;
+  width: 24px;
+  margin-right: 7px;
+}
+
+.chatMessages .imageContainer img {
+  height: 100%;
+  border-radius: 50%;
+  vertical-align: bottom;
+}
+
+.chatMessages .message.last {
+  margin-bottom: 5px;
+}
+
+.loadingSpinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
 }

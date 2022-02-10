@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const Chat = require('../../schemas/Chat')
+const Message = require('../../schemas/Message')
+const User = require('../../schemas/User')
 
 router.post("/", async (req, res, next) => {
   if (!req.body.users) {
@@ -26,10 +28,12 @@ router.post("/", async (req, res, next) => {
 })
 
 router.get("/", async (req, res, next) => {
-  const chatList = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } }})
+  let chatList = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } }})
                 .populate("users")
+                .populate("latestMessage")
                 .sort({ updatedAt: -1 })
                 .catch(() => res.sendStatus(500))
+  chatList = await User.populate(chatList, { path: "latestMessage.sender" })
   res.status(200).send(chatList)
 })
 
@@ -44,6 +48,12 @@ router.get("/:chatId", async (req, res, next) => {
   const currentUserId = req.session.user._id
   const chat = await Chat.findOne({ _id: chatId, users: { $elemMatch: { $eq: currentUserId }} }).populate("users").catch(() => res.sendStatus(500))
   res.status(200).send(chat)
+})
+
+router.get("/:chatId/messages", async (req, res, next) => {
+  const chatId = req.params.chatId
+  const messages = await Message.find({ chat: chatId }).populate("sender").catch(() => res.sendStatus(500))
+  res.status(200).send(messages)
 })
 
 module.exports = router

@@ -51,3 +51,22 @@ h1 {
   font-weight: 700;
   margin: 0;
 }
+
+.loader {
+  background-color: transparent;
+	background-image: url('data:image/svg+xml,\
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40">\
+        <style>\
+          circle { animation: 4s a infinite linear, 3s o infinite linear; stroke: firebrick; }\
+          @keyframes a {from{stroke-dasharray:100 0}50%25{stroke-dasharray:0 100}to{stroke-dasharray:100 0}}\
+          @keyframes o {from{stroke-dashoffset:75}to{stroke-dashoffset:375}}\
+        <%2Fstyle>\
+        <circle r="15.9154943092" stroke-width="7" fill="none" />\
+      </svg>'
+  );
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 60px;
+  height: 100px;
+  width: 100px;
+}

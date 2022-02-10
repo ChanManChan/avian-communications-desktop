@@ -1,5 +1,22 @@
 $(document).ready(() => {
   $.get("/api/chats/" + chatId, data => $("#chatName").text(getChatName(data)))
+
+  $.get(`/api/chats/${chatId}/messages`, data => {
+    const messages = []
+    let lastSenderId = ""
+
+    data.forEach((message, index) => {
+      const html = createMessageHtml(message, data[index + 1], lastSenderId)
+      messages.push(html)
+      lastSenderId = message.sender._id
+    })
+    
+    const messagesHtml = messages.join("")
+    addMessagesHtmlToPage(messagesHtml)
+    scrollToBottom(false)
+    $(".loadingSpinnerContainer").remove()
+    $(".chatContainer").css("visibility", "visible")
+  })
 })
 
 $("#chatNameButton").click(e => {
@@ -42,6 +59,80 @@ function messageSubmitted() {
 
 function sendMessage(content) {
   $.post("/api/messages", { content, chatId }, (data, status, xhr) => {
-    console.log(data)
+    if (xhr.status != 201) {
+      console.error("Could not send message")
+      $(".inputTextbox").val(content)
+      return
+    }
+    addChatMessageHtml(data)
   })
+}
+
+function addChatMessageHtml(message) {
+  if (!message || !message._id) {
+   console.error("Message is not valid") 
+   return
+  }
+  const messageListItem = createMessageHtml(message, null, "")
+  addMessagesHtmlToPage(messageListItem)
+  scrollToBottom(true)
+}
+
+function addMessagesHtmlToPage(html) {
+  $(".chatMessages").append(html)
+}
+
+function createMessageHtml(message, nextMessage, lastSenderId) {
+  const currentSender = message.sender
+  const currentSenderName = currentSender.firstName + " " + currentSender.lastName
+  const currentSenderId = currentSender._id
+  
+  const nextSenderId = nextMessage ? nextMessage.sender._id : null
+  const isFirst = lastSenderId != currentSenderId
+  const isLast = nextSenderId != currentSenderId
+
+  const isMine = currentSender._id == userLoggedIn._id
+  const chatHistoryFeed = nextMessage || lastSenderId
+  let liClassName = isMine ? "mine" : "theirs"
+  let sentBy = ""
+
+  if (isFirst && chatHistoryFeed) {
+    liClassName += " first"
+    if (!isMine) {
+      sentBy = `<div class='sentBy'>
+                  <div class='imageContainer'>
+                    <img src='${currentSender.profilePic}' alt='Profile picture'>
+                  </div>
+                  <span class='senderName'>${currentSenderName}</span>
+                </div>`
+    }
+  }
+
+  if (isLast && chatHistoryFeed) {
+    liClassName += " last"
+  }
+
+  if (!chatHistoryFeed) {
+    liClassName += " live"
+  }
+
+  return `<li class='message ${liClassName}'>
+            <div class='messageContainer'>
+              ${sentBy}
+              <span class='messageBody'>
+                ${message.content}
+              </span>
+            </div>
+          </li>`
+}
+
+function scrollToBottom(animated) {
+  const container = $(".chatMessages")
+  const scrollHeight = container[0].scrollHeight
+
+  if (animated) {
+    container.animate({ scrollTop: scrollHeight }, "slow")
+  } else {
+    container.scrollTop(scrollHeight)
+  }
 }

@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Message = require('../../schemas/Message')
+const Chat = require('../../schemas/Chat')
 
 router.post("/", async (req, res, next) => {
   const content = req.body.content
@@ -18,7 +19,10 @@ router.post("/", async (req, res, next) => {
     chat: chatId
   }
 
-  const message = await Message.create(newMessage).catch(() => res.sendStatus(500))
+  let message = await Message.create(newMessage).catch(() => res.sendStatus(500))
+  message = await message.populate("sender")
+  message = await message.populate("chat")
+  await Chat.findByIdAndUpdate(chatId, { latestMessage: message }).catch(e => console.error(e))
   res.status(201).send(message)
 })
 

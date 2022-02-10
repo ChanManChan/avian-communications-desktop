@@ -11,8 +11,10 @@ block content
         +createChatImage(chat, userLoggedIn)
         span#chatName(data-toggle="modal", data-target="#chatNameModal") Loading...
       .mainContentContainer
-        .chatContainer
-          .chatMessages
+        .loadingSpinnerContainer
+          .loader
+        .chatContainer(style="visibility: hidden")
+          ul.chatMessages
           .footer
             textarea.inputTextbox(name="messageInput", placeholder="Type a message...")
             button.sendMessageButton
@@ -20,4 +22,4 @@ block content
     +createChatNameModal(chat)
 
 block scripts
-  script(src="/js/chat.js") 
+  script(src="/js/chat.js")
