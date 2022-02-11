@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const port = 3000
 const middleware = require('./middleware')
 const path = require("path")
 const session = require('express-session')
@@ -8,7 +7,9 @@ const MongoStore = require('connect-mongo')
 require('dotenv').config()
 require('./database')
 
-app.listen(port, () => console.log(`Server listening on port ${port}`))
+const port = process.env.SERVER_PORT
+const server = app.listen(port, () => console.log(`Server listening on port ${port}`))
+const io = require('socket.io')(server, { pingTimeout: 60000 })
 const sessionStore = MongoStore.create({ mongoUrl: process.env.DB_URI, collectionName: 'sessions' })
 
 app.set("view engine", "pug")
@@ -62,4 +63,25 @@ app.get("/", middleware.requireLogin, (req, res, next) => {
     userLoggedInJs: JSON.stringify(req.session.user),
   }
   res.status(200).render("home", payload)
+})
+
+io.on('connection', socket => {
+  socket.on("setup", userData => {
+    socket.join(userData._id)
+    socket.emit("connected")
+  })
+
+  socket.on("join room", room => socket.join(room))
+  socket.on("typing", room => socket.in(room).emit("typing"))
+  socket.on("stop typing", room => socket.in(room).emit("stop typing"))
+
+  socket.on("new message", message => {
+    const chat = message.chat
+    if (!chat.users) return console.error("chat.users not defined");
+
+    chat.users.forEach(user => {
+      if (user._id == message.sender._id) return
+      socket.in(user._id).emit("message received", message)
+    })
+  })
 })

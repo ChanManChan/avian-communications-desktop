@@ -15,6 +15,7 @@ block content
           .loader
         .chatContainer(style="visibility: hidden")
           ul.chatMessages
+          +createTypingIndicator()
           .footer
             textarea.inputTextbox(name="messageInput", placeholder="Type a message...")
             button.sendMessageButton

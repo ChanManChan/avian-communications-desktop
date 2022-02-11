@@ -727,7 +727,7 @@ span.errorMessage {
   width: fit-content;
 }
 
-.chatMessages .message.live .messageBody {
+.chatMessages .message.single .messageBody {
   border-radius: 18px !important;
 }
 

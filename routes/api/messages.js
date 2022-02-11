@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Message = require('../../schemas/Message')
 const Chat = require('../../schemas/Chat')
+const User = require('../../schemas/User')
 
 router.post("/", async (req, res, next) => {
   const content = req.body.content
@@ -22,6 +23,8 @@ router.post("/", async (req, res, next) => {
   let message = await Message.create(newMessage).catch(() => res.sendStatus(500))
   message = await message.populate("sender")
   message = await message.populate("chat")
+  message = await User.populate(message, { path: "chat.users" })
+  
   await Chat.findByIdAndUpdate(chatId, { latestMessage: message }).catch(e => console.error(e))
   res.status(201).send(message)
 })

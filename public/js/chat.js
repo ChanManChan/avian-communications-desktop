@@ -1,4 +1,12 @@
+let typing = false
+let lastTypingTime
+let typingTimer
+
 $(document).ready(() => {
+  socket.emit("join room", chatId)
+  socket.on("typing", () => $(".typing").css("display", "inline-flex"))
+  socket.on("stop typing", () => $(".typing").css("display", "none"))
+
   $.get("/api/chats/" + chatId, data => $("#chatName").text(getChatName(data)))
 
   $.get(`/api/chats/${chatId}/messages`, data => {
@@ -43,17 +51,51 @@ $(".sendMessageButton").click(() => {
 })
 
 $(".inputTextbox").keydown(e => {
+  updateTyping()
   if ((e.which === 13 || e.keyCode === 13) && !e.shiftKey) {
     messageSubmitted()
     return false
   }
 })
 
+function updateTyping() {
+  if (!connected) return
+
+  if (typingTimer) {
+    clearTimeout(typingTimer)
+  }
+
+  if (!typing) {
+    typing = true
+    socket.emit("typing", chatId)
+  }
+
+  lastTypingTime = new Date().getTime()
+  const timerLength = 3000
+
+  typingTimer = setTimeout(() => {
+    const timeNow = new Date().getTime()
+    const timeDiff = timeNow - lastTypingTime
+
+    if (timeDiff >= timerLength && typing) {
+      socket.emit("stop typing", chatId)
+      typing = false
+    }
+  }, timerLength)
+}
+
 function messageSubmitted() {
   const content = $(".inputTextbox").val().trim()
   if (content) {
     sendMessage(content)
     $(".inputTextbox").val("")
+
+    if (typingTimer) {
+      clearTimeout(typingTimer)
+    }
+
+    socket.emit("stop typing", chatId)
+    typing = false
   }
 }
 
@@ -65,6 +107,10 @@ function sendMessage(content) {
       return
     }
     addChatMessageHtml(data)
+
+    if (connected) {
+      socket.emit("new message", data)  
+    }
   })
 }
 
@@ -92,11 +138,10 @@ function createMessageHtml(message, nextMessage, lastSenderId) {
   const isLast = nextSenderId != currentSenderId
 
   const isMine = currentSender._id == userLoggedIn._id
-  const chatHistoryFeed = nextMessage || lastSenderId
   let liClassName = isMine ? "mine" : "theirs"
   let sentBy = ""
 
-  if (isFirst && chatHistoryFeed) {
+  if (isFirst) {
     liClassName += " first"
     if (!isMine) {
       sentBy = `<div class='sentBy'>
@@ -108,12 +153,12 @@ function createMessageHtml(message, nextMessage, lastSenderId) {
     }
   }
 
-  if (isLast && chatHistoryFeed) {
+  if (isLast) {
     liClassName += " last"
   }
 
-  if (!chatHistoryFeed) {
-    liClassName += " live"
+  if (liClassName.includes("first") && liClassName.includes("last")) {
+    liClassName = liClassName.replace("first", "").replace("last", "").trim() + " single"
   }
 
   return `<li class='message ${liClassName}'>
