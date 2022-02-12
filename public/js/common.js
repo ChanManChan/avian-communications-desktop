@@ -3,6 +3,11 @@ let pinnedPostId
 let timer
 const pinnedPostIndicator = "<i class='fas fa-thumbtack'></i> <span>Pinned post</span>"
 
+$(document).ready(() => {
+  refreshMessagesBadge()
+  refreshNotificationsBadge()
+})
+
 $("#postTextarea, #replyTextarea").keyup(e => {
   const textbox = $(e.target)
   const value = textbox.val().trim()
@@ -596,6 +601,7 @@ function messageReceived(message) {
   } else {
     addChatMessageHtml(message)
   }
+  refreshMessagesBadge()
 }
 
 function markNotificationsAsOpened(notificationId = null, callback = null) {
@@ -612,5 +618,27 @@ function markNotificationsAsOpened(notificationId = null, callback = null) {
     url,
     type: "PUT",
     success: callback
+  })
+}
+
+function refreshMessagesBadge() {
+  $.get("/api/chats", { unreadOnly: true }, data => {
+    const results = data.length
+    if (results > 0) {
+      $("#messagesBadge").text(results).addClass("active")
+    } else {
+      $("#messagesBadge").text("").removeClass("active")
+    }
+  })
+}
+
+function refreshNotificationsBadge() {
+  $.get("/api/notifications", { unreadOnly: true }, data => {
+    const results = data.length
+    if (results > 0) {
+      $("#notificationsBadge").text(results).addClass("active")
+    } else {
+      $("#notificationsBadge").text("").removeClass("active")
+    }
   })
 }

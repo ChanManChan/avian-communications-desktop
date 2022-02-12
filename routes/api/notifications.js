@@ -4,7 +4,14 @@ const Notification = require('../../schemas/Notification')
 
 router.get("/", async (req, res, next) => {
   const currentUserId = req.session.user._id
-  const notifications = await Notification.find({ userTo: currentUserId, notificationType: { $ne: "newMessage" } })
+  const unreadOnly = req.query.unreadOnly
+  const searchFilter = { userTo: currentUserId, notificationType: { $ne: "newMessage" } }
+
+  if (unreadOnly && unreadOnly == "true") {
+    searchFilter.opened = false
+  }
+
+  const notifications = await Notification.find(searchFilter)
                           .populate("userTo")
                           .populate("userFrom")
                           .sort({ createdAt: -1 })

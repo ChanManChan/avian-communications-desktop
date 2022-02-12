@@ -7,6 +7,7 @@ nav {
 }
 
 nav a {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -811,4 +812,27 @@ span.errorMessage {
 
 button#markNotificationsAsRead {
   cursor: pointer;
+}
+
+#notificationsBadge,
+#messagesBadge {
+  background-color: var(--primaryBackground);
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--dark);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+}
+
+#notificationsBadge.active,
+#messagesBadge.active {
+  visibility: visible;
 }

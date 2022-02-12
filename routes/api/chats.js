@@ -28,11 +28,19 @@ router.post("/", async (req, res, next) => {
 })
 
 router.get("/", async (req, res, next) => {
-  let chatList = await Chat.find({ users: { $elemMatch: { $eq: req.session.user._id } }})
+  const unreadOnly = req.query.unreadOnly
+  const currentUserId = req.session.user._id
+
+  let chatList = await Chat.find({ users: { $elemMatch: { $eq: currentUserId } }})
                 .populate("users")
                 .populate("latestMessage")
                 .sort({ updatedAt: -1 })
                 .catch(() => res.sendStatus(500))
+
+  if (unreadOnly && unreadOnly == "true") {
+    chatList = chatList.filter(chat => !chat.latestMessage?.readBy?.includes(currentUserId))
+  }
+
   chatList = await User.populate(chatList, { path: "latestMessage.sender" })
   res.status(200).send(chatList)
 })
