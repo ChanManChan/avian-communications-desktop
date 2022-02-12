@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const User = require('../../schemas/User')
 const Post = require('../../schemas/Post')
+const Notification = require('../../schemas/Notification')
 
 router.get("/", async (req, res, next) => {
   const searchFilter = req.query
@@ -43,11 +44,10 @@ router.get("/:id", async (req, res, next) => {
   }
 
   if (postData.replyTo !== undefined) {
-    result.replyTo = postData.replyTo
+    result.replyTo = await Post.populate(postData.replyTo, { path: "repostData", populate: { path: "postedBy" } })
   }
 
   result.replies = await getPosts({ replyTo: postId })
-
   res.status(200).send(result)
 })
 
@@ -90,6 +90,13 @@ router.post("/", async (req, res, next) => {
 
   let createdPost = await Post.create(postData).catch(e => res.sendStatus(400))
   createdPost = await User.populate(createdPost, { path: "postedBy" })
+
+  if (createdPost.replyTo) {
+    createdPost = await Post.populate(createdPost, { path: "replyTo" })
+    createdPost = await User.populate(createdPost, { path: "replyTo.postedBy" })
+    await Notification.insertNotification(createdPost.replyTo.postedBy._id, req.session.user._id, "reply", createdPost._id)
+  }
+
   res.status(201).send(createdPost)
 })
 
@@ -101,6 +108,11 @@ router.put("/:id/like", async (req, res, next) => {
 
   req.session.user = await User.findByIdAndUpdate(userId, { [option]: { likes: postId } }, { new: true }).catch(e => res.sendStatus(400))
   const post = await Post.findByIdAndUpdate(postId, { [option]: { likes: userId } }, { new: true }).catch(e => res.sendStatus(400))
+
+  if (!isLiked) {
+    await Notification.insertNotification(post.postedBy, userId, "postLike", post._id)
+  }
+
   res.status(200).send(post)
 })
 
@@ -116,10 +128,15 @@ router.post("/:id/repost", async (req, res, next) => {
   }
 
   req.session.user = await User.findByIdAndUpdate(userId, { [option]: { reposts: repost._id } }, { new: true }).catch(e => res.sendStatus(400))
-  await Post.findByIdAndUpdate(postId, { [option]: { repostUsers: userId } }, { new: true }).catch(e => res.sendStatus(400))
+  const originalPost = await Post.findByIdAndUpdate(postId, { [option]: { repostUsers: userId } }, { new: true }).catch(e => res.sendStatus(400))
   repost = await Post.populate(repost, { path: "repostData" })
   repost = await User.populate(repost, { path: "postedBy" })
   repost = await User.populate(repost, { path: "repostData.postedBy" })
+
+  if (!deletedPost) {
+    await Notification.insertNotification(originalPost.postedBy, userId, "repost", originalPost._id)
+  }
+
   res.status(200).send(repost)
 })
 

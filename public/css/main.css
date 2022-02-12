@@ -800,3 +800,15 @@ span.errorMessage {
   justify-content: center;
   width: 100%;
 }
+
+.resultListItem.active {
+  background-color: var(--primaryBackground)
+}
+
+.resultListItem.notification * {
+  pointer-events: none;
+}
+
+button#markNotificationsAsRead {
+  cursor: pointer;
+}

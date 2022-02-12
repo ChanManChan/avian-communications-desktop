@@ -391,7 +391,7 @@ function createPostHtml(postData, largeFont = false) {
 
     const replyToUsername = postData.replyTo.postedBy.username
     replyFlag = `<div class='replyFlag'>
-                  Replying to <a href='/profile/${replyToUsername}}'>@${replyToUsername}</a>
+                  Replying to <a href='/profile/${replyToUsername}'>@${replyToUsername}</a>
                  </div>`
   }
 
@@ -596,4 +596,21 @@ function messageReceived(message) {
   } else {
     addChatMessageHtml(message)
   }
+}
+
+function markNotificationsAsOpened(notificationId = null, callback = null) {
+  if (!callback) callback = (_, __, xhr) => {
+    if (xhr.status == 204) {
+      const activeNotifications = $(".resultListItem.notification.active")
+      if (activeNotifications.length > 0) {
+        activeNotifications.removeClass("active")
+      }
+    }
+  }
+  const url = notificationId ? `/api/notifications/${notificationId}/opened` : '/api/notifications/opened'
+  $.ajax({
+    url,
+    type: "PUT",
+    success: callback
+  })
 }

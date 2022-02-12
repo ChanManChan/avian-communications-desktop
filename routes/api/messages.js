@@ -3,6 +3,7 @@ const router = express.Router()
 const Message = require('../../schemas/Message')
 const Chat = require('../../schemas/Chat')
 const User = require('../../schemas/User')
+const Notification = require('../../schemas/Notification')
 
 router.post("/", async (req, res, next) => {
   const content = req.body.content
@@ -25,8 +26,17 @@ router.post("/", async (req, res, next) => {
   message = await message.populate("chat")
   message = await User.populate(message, { path: "chat.users" })
   
-  await Chat.findByIdAndUpdate(chatId, { latestMessage: message }).catch(e => console.error(e))
+  const chat = await Chat.findByIdAndUpdate(chatId, { latestMessage: message }).catch(e => console.error(e))
+  insertNotifications(chat, message)
   res.status(201).send(message)
 })
+
+function insertNotifications(chat, message) {
+  chat.users.forEach(userId => {
+    const userFrom = message.sender._id
+    if (userId == userFrom.toString()) return
+    Notification.insertNotification(userId, userFrom, "newMessage", chat._id)
+  })
+}
 
 module.exports = router

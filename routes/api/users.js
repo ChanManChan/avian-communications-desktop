@@ -5,6 +5,7 @@ const fs = require('fs')
 const multer = require('multer')
 const upload = multer({ dest: "uploads/" })
 const User = require('../../schemas/User')
+const Notification = require('../../schemas/Notification')
 
 router.get("/", async (req, res, next) => {
   let searchFilter = req.query
@@ -36,6 +37,11 @@ router.put("/:userId/follow", async (req, res, next) => {
   req.session.user = await User.findByIdAndUpdate(currentUserId, { [option]: { following: userId } }, { new: true })
                       .catch(e => res.sendStatus(500))
   await User.findByIdAndUpdate(userId, { [option]: { followers: currentUserId } }).catch(e => res.sendStatus(500))
+
+  if (!isFollowing) {
+    await Notification.insertNotification(userId, currentUserId, "follow", currentUserId)
+  }
+
   res.status(200).send(req.session.user)
 })
 

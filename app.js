@@ -35,11 +35,13 @@ const postRoute = require('./routes/post')
 const profileRoute = require('./routes/profile')
 const searchRoute = require('./routes/search')
 const messagesRoute = require('./routes/messages')
+const notificationsRoute = require('./routes/notifications')
 
 const postsApiRoute = require('./routes/api/posts')
 const usersApiRoute = require('./routes/api/users')
 const chatsApiRoute = require('./routes/api/chats')
 const messagesApiRoute = require('./routes/api/messages')
+const notificationsApiRoute = require('./routes/api/notifications')
 
 app.use("/login", loginRoute)
 app.use("/register", registerRoute)
@@ -48,11 +50,13 @@ app.use("/posts", postRoute)
 app.use("/profile", profileRoute)
 app.use("/search", searchRoute)
 app.use("/messages", messagesRoute)
+app.use("/notifications", notificationsRoute)
 
 app.use("/api/posts", postsApiRoute)
 app.use("/api/users", usersApiRoute)
 app.use("/api/chats", chatsApiRoute)
 app.use("/api/messages", messagesApiRoute)
+app.use("/api/notifications", notificationsApiRoute)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
