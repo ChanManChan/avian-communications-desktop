@@ -546,7 +546,8 @@ span.errorMessage {
   cursor: pointer;
 }
 
-.resultsContainer .resultListItem {
+.resultsContainer .resultListItem,
+#notificationList .resultListItem {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -559,13 +560,15 @@ span.errorMessage {
   background-color: var(--light);
 }
 
-.resultsContainer .resultListItem .resultsDetailsContainer {
+.resultsContainer .resultListItem .resultsDetailsContainer,
+#notificationList .resultListItem .resultsDetailsContainer {
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.resultsContainer .resultListItem .resultsDetailsContainer .heading {
+.resultsContainer .resultListItem .resultsDetailsContainer .heading,
+#notificationList .resultListItem .resultsDetailsContainer .heading {
   font-weight: 700;
 }
 
@@ -574,7 +577,8 @@ span.errorMessage {
   font-size: 14px;
 }
 
-.resultsContainer .resultListItem .resultsImageContainer {
+.resultsContainer .resultListItem .resultsImageContainer,
+#notificationList .resultListItem .resultsImageContainer {
   height: 40px;
   width: 40px;
   position: relative;
@@ -584,7 +588,8 @@ span.errorMessage {
   padding: 5px;
 }
 
-.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img {
+.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img,
+#notificationList .resultListItem .resultsImageContainer.groupChatImage img {
   height: 65%;
   width: 65%;
   position: absolute;
@@ -592,12 +597,14 @@ span.errorMessage {
   border: 2px solid white;
 }
 
-.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img:first-of-type {
+.resultsContainer .resultListItem .resultsImageContainer.groupChatImage img:first-of-type,
+#notificationList .resultListItem .resultsImageContainer.groupChatImage img:first-of-type {
   top: 0;
   right: 0;
 }
 
-.resultsContainer .resultListItem .resultsImageContainer img {
+.resultsContainer .resultListItem .resultsImageContainer img,
+#notificationList .resultListItem .resultsImageContainer img {
   height: 100%;
   width: 100%;
   border-radius: 50%;
@@ -835,4 +842,13 @@ button#markNotificationsAsRead {
 #notificationsBadge.active,
 #messagesBadge.active {
   visibility: visible;
+}
+
+#notificationList {
+  position: fixed;
+  top: 5px;
+  right: 20px;
+  width: 350px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }

@@ -64,4 +64,10 @@ router.get("/:chatId/messages", async (req, res, next) => {
   res.status(200).send(messages)
 })
 
+router.put("/:chatId/messages/read", async (req, res, next) => {
+  const chatId = req.params.chatId
+  await Message.updateMany({ chat: chatId }, { $addToSet: { readBy: req.session.user._id } }).catch(() => res.sendStatus(500))
+  res.sendStatus(204)
+})
+
 module.exports = router

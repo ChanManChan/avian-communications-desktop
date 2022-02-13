@@ -43,6 +43,7 @@ $("#submitPostButton, #submitReplyButton").click(e => {
     button.prop("disabled", true)
     if (postData.replyTo) {
       $("#replyModal").modal('hide')
+      emitNotification(postData.replyTo.postedBy._id)
     }
   })
 })
@@ -275,6 +276,7 @@ $(document).on("click", ".likeButton", e => {
         button.find("span").text(postData.likes.length || "")
         if (postData.likes.includes(userLoggedIn._id)) {
           button.addClass("active")
+          emitNotification(postData.postedBy)
         } else {
           button.removeClass("active")
         }
@@ -298,6 +300,7 @@ $(document).on("click", ".repostButton", e => {
           const html = createPostHtml(postData)
           $("div.postsContainer").prepend(html)
           $(`div.post[data-id="${originalPostId}"] button.repostButton.active span#repostCount`).text(postData.repostData.repostUsers.length || "")
+          emitNotification(postData.repostData.postedBy._id)
         } else {
           const repostId = postData._id
           button.removeClass("active")
@@ -333,6 +336,7 @@ $(document).on("click", ".followButton", e => {
       if (userData.following && userData.following.includes(userId)) {
         button.addClass("following")
         button.text("Following")
+        emitNotification(userId)
       } else {
         button.removeClass("following")
         button.text("Follow")
@@ -404,7 +408,7 @@ function createPostHtml(postData, largeFont = false) {
     pinnedPostText = pinnedPostIndicator
   }
 
-  if (postedBy._id == userLoggedIn._id) {
+  if (postData.postedBy._id == userLoggedIn._id) {
     let pinnedClass = ''
     let dataTarget = '#confirmPinModal'
 
@@ -596,8 +600,8 @@ function getOtherChatUsers(users) {
 }
 
 function messageReceived(message) {
-  if ($(".chatContainer").length == 0) {
-    // show notification
+  if ($(`.chatContainer[data-room='${message.chat._id}']`).length == 0) {
+    showMessagePopup(message)
   } else {
     addChatMessageHtml(message)
   }
@@ -641,4 +645,116 @@ function refreshNotificationsBadge() {
       $("#notificationsBadge").text("").removeClass("active")
     }
   })
+}
+
+function showNotificationPopup(data) {
+  const html = createNotificationHtml(data)
+  const element = $(html)
+  element.hide().prependTo("#notificationList").slideDown("fast")
+  setTimeout(() => element.fadeOut(400), 5000)
+}
+
+function showMessagePopup(data) {
+
+  if (!data.chat.latestMessage._id) {
+    data.chat.latestMessage = data
+  }
+
+  const html = createChatHtml(data.chat)
+  const element = $(html)
+  element.hide().prependTo("#notificationList").slideDown("fast")
+  setTimeout(() => element.fadeOut(400), 5000)
+}
+
+function createNotificationHtml(notification) {
+  const userFrom = notification.userFrom
+  const text = getNotificationText(notification)
+  const url = getNotificationUrl(notification)
+  const className = notification.opened ? "" : "active"
+
+  return `<a href='${url}' class='resultListItem notification ${className}' data-id='${notification._id}'>
+            <div class='resultsImageContainer'>
+              <img src='${userFrom.profilePic}'>
+            </div>
+            <div class='resultsDetailsContainer ellipsis'>
+              <span class='ellipsis'>${text}</span>
+            </div>
+          </a>`
+}
+
+function getNotificationText(notification) {
+  const userFrom = notification.userFrom
+  if (!userFrom.firstName || !userFrom.lastName) return console.error("User from data not populated")
+
+  const userFromName = userFrom.firstName + " " + userFrom.lastName
+  let text
+
+  if (notification.notificationType == "repost") {
+    text = `${userFromName} reposted one of your posts`
+  } else if (notification.notificationType == "postLike") {
+    text = `${userFromName} liked one of your posts`
+  } else if (notification.notificationType == "reply") {
+    text = `${userFromName} replied to one of your posts`
+  } else if (notification.notificationType == "follow") {
+    text = `${userFromName} followed you`
+  }
+
+  return `<span class='ellipsis'>${text}</span>`
+}
+
+function getNotificationUrl(notification) {
+  let url = '#'
+
+  if (notification.notificationType == "repost" || notification.notificationType == "postLike" || notification.notificationType == "reply") {
+    url = `/posts/${notification.entityId}`
+  } else if (notification.notificationType == "follow") {
+    url = `/profile/${notification.entityId}`
+  }
+
+  return url
+}
+
+function createChatHtml(chat) {
+  const chatName = getChatName(chat)
+  const chatImage = getChatImageElements(chat)
+  const latestMessage = getLatestMessage(chat.latestMessage)
+  const activeClass = chat.latestMessage?.readBy.includes(userLoggedIn._id) ? "" : "active"
+
+  return `<a href="/messages/${chat._id}" class='resultListItem ${activeClass}'>
+            ${chatImage}
+            <div class='resultsDetailsContainer ellipsis'>
+              <span class='heading ellipsis'>${chatName}</span>
+              <span class='subText ellipsis'>${latestMessage}</span>
+            </div>
+          </a>`
+}
+
+function getLatestMessage(latestMessage) {
+  if (latestMessage) {
+    const sender = latestMessage.sender.firstName + " " + latestMessage.sender.lastName
+    return `${sender}: ${latestMessage.content}`
+  }
+  return "New chat"
+}
+
+function getChatImageElements(chatData) {
+  const otherChatUsers = getOtherChatUsers(chatData.users)
+  let groupChatClass = ""
+  let chatImage = getUserChatImageElement(otherChatUsers[0])
+
+  if (otherChatUsers.length > 1) {
+    groupChatClass = "groupChatImage"
+    chatImage += getUserChatImageElement(otherChatUsers[1])
+  }
+
+  return `<div class="resultsImageContainer ${groupChatClass}">
+            ${chatImage}
+          </div>`
+}
+
+function getUserChatImageElement(user) {
+  if (!user) {
+    return console.error("User data is required to create chat image element")
+  }
+  return `<img src='${user.profilePic}' alt='User's profile pic' >`
 }

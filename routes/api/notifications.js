@@ -19,6 +19,16 @@ router.get("/", async (req, res, next) => {
   res.status(200).send(notifications)
 })
 
+router.get("/latest", async (req, res, next) => {
+  const currentUserId = req.session.user._id
+  const notification = await Notification.findOne({ userTo: currentUserId })
+                          .populate("userTo")
+                          .populate("userFrom")
+                          .sort({ createdAt: -1 })
+                          .catch(() => res.sendStatus(500))
+  res.status(200).send(notification)
+})
+
 router.put("/:id/opened", async (req, res, next) => {
   const notificationId = req.params.id
   await Notification.findByIdAndUpdate(notificationId, { opened: true }).catch(() => res.sendStatus(500))
